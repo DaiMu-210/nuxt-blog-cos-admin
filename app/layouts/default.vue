@@ -1,0 +1,73 @@
+<script setup lang="ts">
+const { data: site } = await useAsyncData('site:layout', () => queryCollection('site').first());
+const isDev = import.meta.dev;
+
+const route = useRoute();
+const isSearchOpen = ref(false);
+const navItems = computed(() => [
+  { to: '/', label: '首页', match: (p: string) => p === '/' },
+  { to: '/posts', label: '文章', match: (p: string) => p === '/posts' || p.startsWith('/posts/') },
+  { to: '/archives', label: '归档', match: (p: string) => p === '/archives' },
+  { to: '/categories', label: '分类', match: (p: string) => p === '/categories' || p.startsWith('/categories/') },
+  { to: '/links', label: '友链', match: (p: string) => p === '/links' },
+]);
+
+function navLinkClass(active: boolean) {
+  return ['ml-3 text-sm transition', active ? 'text-slate-900 font-semibold' : 'text-slate-700 hover:text-slate-900'];
+}
+</script>
+
+<template>
+  <div class="min-h-screen flex flex-col">
+    <header class="border-b border-slate-200 bg-white">
+      <div class="tw-container h-14 flex items-center justify-between">
+        <NuxtLink class="font-bold text-slate-900 no-underline" to="/">
+          {{ site?.title || '我的博客' }}
+        </NuxtLink>
+        <nav class="flex items-center">
+          <NuxtLink v-for="it in navItems" :key="it.to" :to="it.to" :class="navLinkClass(it.match(route.path))">
+            {{ it.label }}
+          </NuxtLink>
+          <button
+            type="button"
+            class="ml-3 inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            aria-label="搜索"
+            @click="isSearchOpen = true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="h-4 w-4">
+              <circle cx="11" cy="11" r="8" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+          </button>
+          <NuxtLink v-if="isDev" to="/admin" class="ml-3 text-sm text-slate-500 hover:text-slate-900">
+            控制台
+          </NuxtLink>
+        </nav>
+      </div>
+    </header>
+
+    <ClientOnly>
+      <SearchDialog :open="isSearchOpen" @close="isSearchOpen = false" />
+    </ClientOnly>
+
+    <main class="flex-1 py-6">
+      <div class="tw-container">
+        <slot />
+      </div>
+    </main>
+
+    <footer class="border-t border-slate-100 bg-white">
+      <div class="tw-container h-14 flex items-center justify-between text-sm text-slate-500">
+        <span class="font-semibold text-slate-900">{{ site?.title || '我的博客' }}</span>
+        <SiteUptime v-if="site?.since" :since="site.since" />
+      </div>
+    </footer>
+  </div>
+</template>

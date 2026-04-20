@@ -1,0 +1,15 @@
+{
+  "groups": [
+    {
+      "name": "朋友们",
+      "items": [
+        {
+          "title": "大羊实验室",
+          "url": "https://dsheep.com/",
+          "desc": "携手共进，协作催化创新力量",
+          "avatar": "https://dsheep.com/img/生肖羊.png"
+        }
+      ]
+    }
+  ]
+}

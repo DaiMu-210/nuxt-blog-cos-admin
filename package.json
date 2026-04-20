@@ -1,0 +1,36 @@
+{
+  "name": "nuxt-blog-cos-admin",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "generate:dist": "nuxt generate && node scripts/export-dist.mjs",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/content": "^3.13.0",
+    "@toast-ui/editor": "^3.2.2",
+    "better-sqlite3": "^12.9.0",
+    "gray-matter": "^4.0.3",
+    "nuxt": "^4.4.2",
+    "vue": "^3.5.32",
+    "vue-router": "^5.0.4",
+    "zod": "^4.3.6"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "better-sqlite3",
+      "esbuild"
+    ]
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "7.0.0-beta.1",
+    "@tailwindcss/typography": "^0.5.19",
+    "@types/node": "^25.6.0",
+    "tailwindcss": "^4.2.2"
+  }
+}

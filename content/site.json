@@ -1,0 +1,30 @@
+{
+  "title": "KJSone的日常",
+  "home": {
+    "latestCount": 10,
+    "showStats": true,
+    "pinnedSlugs": [],
+    "featuredSlugs": [
+      "2026-04-19-hello"
+    ]
+  },
+  "social": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/DaiMu-210"
+    },
+    {
+      "label": "BiliBili",
+      "url": "https://space.bilibili.com/440962725"
+    },
+    {
+      "label": "Gmail",
+      "url": "mailto:daimu2102655453@gmail.com"
+    }
+  ],
+  "since": "2025-04-19",
+  "avatar": "https://img.kjsone.com/undefined20251118105306430.jpg?imageSlim",
+  "name": "KJSone",
+  "bio": "家养一只小泰迪",
+  "intro": "鄙人什么也不会，就会写点日记"
+}
