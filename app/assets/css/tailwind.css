@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
 @layer base {
@@ -42,5 +42,16 @@
 
   .tw-link {
     @apply text-blue-600 hover:underline;
+  }
+}
+
+@layer utilities {
+  .prose code::before,
+  .prose code::after {
+    content: '';
+  }
+
+  .prose :not(pre) > code {
+    @apply rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-medium text-slate-900;
   }
 }

@@ -5,6 +5,13 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/content', '@nuxtjs/tailwindcss'],
 
+  runtimeConfig: {
+    public: {
+      utterancesRepo: '',
+      utterancesTheme: 'github-light',
+    },
+  },
+
   css: ['@toast-ui/editor/dist/toastui-editor.css'],
 
   tailwindcss: {

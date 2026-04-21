@@ -1,25 +1,25 @@
 <script setup lang="ts">
-const route = useRoute()
+const route = useRoute();
 
-const contentRef = ref<HTMLElement | null>(null)
+const contentRef = ref<HTMLElement | null>(null);
 
 const slug = computed(() => {
-  const s = route.params.slug
-  return Array.isArray(s) ? s.join('/') : String(s || '')
-})
+  const s = route.params.slug;
+  return Array.isArray(s) ? s.join('/') : String(s || '');
+});
 
-const contentPath = computed(() => `/posts/${slug.value}`)
+const contentPath = computed(() => `/posts/${slug.value}`);
 
 const { data: post } = await useAsyncData(
   () => `post:${contentPath.value}`,
-  () => queryCollection('posts').path(contentPath.value).first()
-)
+  () => queryCollection('posts').path(contentPath.value).first(),
+);
 
 if (!post.value) {
-  throw createError({ statusCode: 404, statusMessage: '文章不存在' })
+  throw createError({ statusCode: 404, statusMessage: '文章不存在' });
 }
 
-const tocLinks = computed(() => (post.value as any)?.body?.toc?.links || [])
+const tocLinks = computed(() => (post.value as any)?.body?.toc?.links || []);
 </script>
 
 <template>
@@ -41,7 +41,11 @@ const tocLinks = computed(() => (post.value as any)?.body?.toc?.links || [])
         <div ref="contentRef" class="prose prose-slate max-w-none">
           <ContentRenderer :value="post as any" />
         </div>
+
+        <UtterancesComments />
       </div>
     </div>
+
+    <BackToTopButton />
   </article>
 </template>

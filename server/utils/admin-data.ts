@@ -15,6 +15,7 @@ export type SiteData = {
   bio?: string
   intro?: string
   social?: Array<{ label: string; url: string }>
+  projects?: Array<{ name: string; url: string; desc?: string; icon?: string }>
   home?: {
     pinnedSlugs?: string[]
     featuredSlugs?: string[]

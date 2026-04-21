@@ -5,6 +5,10 @@ const { data: posts } = await useAsyncData('posts', () =>
   queryCollection('posts').order('date', 'DESC').all()
 )
 
+onMounted(() => {
+  refreshNuxtData('site')
+})
+
 const publishedPosts = computed(() =>
   (posts.value ?? []).filter((p: any) => !p.draft)
 )
@@ -44,6 +48,29 @@ const stats = computed(() => {
     tags: tags.size
   }
 })
+
+function toBase64Url(str: string) {
+  const g: any = globalThis as any
+  if (typeof g.Buffer !== 'undefined') {
+    return g.Buffer.from(str, 'utf8').toString('base64url')
+  }
+  const b64 = btoa(unescape(encodeURIComponent(str)))
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+}
+
+const categories = computed(() => {
+  const map = new Map<string, number>()
+  for (const p of publishedPosts.value) {
+    const c = p.category ? String(p.category) : '未分类'
+    map.set(c, (map.get(c) ?? 0) + 1)
+  }
+  return Array.from(map.entries())
+    .map(([name, count]) => ({ name, count, slug: toBase64Url(name) }))
+    .sort((a, b) => b.count - a.count)
+})
+
+const sidebarCategories = computed(() => categories.value.slice(0, 8))
+const hasMoreCategories = computed(() => categories.value.length > sidebarCategories.value.length)
 
 const tagCloud = computed(() => {
   const map = new Map<string, number>()
@@ -120,6 +147,50 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
               <div class="mt-1 text-xs text-slate-500">标签</div>
             </div>
           </div>
+        </section>
+
+        <section v-if="site?.projects?.length" class="tw-card p-5">
+          <div class="mb-3 flex items-baseline justify-between gap-2">
+            <h2 class="m-0 text-sm font-semibold text-slate-900">我的项目</h2>
+          </div>
+          <div class="space-y-2">
+            <a
+              v-for="p in site.projects"
+              :key="p.url || p.name"
+              :href="p.url"
+              target="_blank"
+              rel="noreferrer"
+              class="block rounded-xl border border-slate-200 bg-white p-3 no-underline transition hover:bg-slate-50 hover:border-slate-300"
+            >
+              <div class="flex items-center gap-2">
+                <span v-if="p.icon" class="text-base">{{ p.icon }}</span>
+                <span class="text-sm font-semibold text-slate-900">{{ p.name }}</span>
+              </div>
+              <div v-if="p.desc" class="mt-1 text-xs text-slate-500">{{ p.desc }}</div>
+            </a>
+          </div>
+        </section>
+
+        <section v-if="sidebarCategories.length" class="tw-card p-5">
+          <div class="mb-3 flex items-baseline justify-between gap-2">
+            <h2 class="m-0 text-sm font-semibold text-slate-900">分类</h2>
+            <NuxtLink v-if="hasMoreCategories" class="text-xs text-blue-600 hover:underline" to="/categories">
+              更多
+            </NuxtLink>
+          </div>
+          <ul class="space-y-2">
+            <li v-for="c in sidebarCategories" :key="c.slug">
+              <NuxtLink
+                class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 no-underline transition hover:bg-slate-50 hover:border-slate-300"
+                :to="`/categories/${c.slug}`"
+              >
+                <span class="text-sm font-semibold text-slate-900">{{ c.name }}</span>
+                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                  {{ c.count }}
+                </span>
+              </NuxtLink>
+            </li>
+          </ul>
         </section>
 
         <section v-if="tagCloud.length" class="tw-card p-5">

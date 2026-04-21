@@ -1,5 +1,5 @@
-import { defineCollection, defineContentConfig } from '@nuxt/content'
-import { z } from 'zod'
+import { defineCollection, defineContentConfig } from '@nuxt/content';
+import { z } from 'zod';
 
 export default defineContentConfig({
   collections: {
@@ -12,8 +12,8 @@ export default defineContentConfig({
         date: z.string().optional(),
         category: z.string().optional(),
         tags: z.array(z.string()).optional(),
-        draft: z.boolean().optional()
-      })
+        draft: z.boolean().optional(),
+      }),
     }),
 
     site: defineCollection({
@@ -30,8 +30,18 @@ export default defineContentConfig({
           .array(
             z.object({
               label: z.string(),
-              url: z.string()
-            })
+              url: z.string(),
+            }),
+          )
+          .optional(),
+        projects: z
+          .array(
+            z.object({
+              name: z.string(),
+              url: z.string(),
+              desc: z.string().optional(),
+              icon: z.string().optional(),
+            }),
           )
           .optional(),
         home: z
@@ -39,10 +49,10 @@ export default defineContentConfig({
             pinnedSlugs: z.array(z.string()).optional(),
             featuredSlugs: z.array(z.string()).optional(),
             latestCount: z.number().optional(),
-            showStats: z.boolean().optional()
+            showStats: z.boolean().optional(),
           })
-          .optional()
-      })
+          .optional(),
+      }),
     }),
 
     links: defineCollection({
@@ -57,12 +67,12 @@ export default defineContentConfig({
                 title: z.string(),
                 url: z.string(),
                 desc: z.string().optional(),
-                avatar: z.string().optional()
-              })
-            )
-          })
-        )
-      })
-    })
-  }
-})
+                avatar: z.string().optional(),
+              }),
+            ),
+          }),
+        ),
+      }),
+    }),
+  },
+});

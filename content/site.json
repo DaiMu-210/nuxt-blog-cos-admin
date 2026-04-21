@@ -22,7 +22,15 @@
       "url": "mailto:daimu2102655453@gmail.com"
     }
   ],
-  "since": "2025-04-19",
+  "projects": [
+    {
+      "name": "毕业设计",
+      "url": "https://bs.kjsone.com",
+      "icon": "👷‍♀️",
+      "desc": "一个简单的装修项目管理系统"
+    }
+  ],
+  "since": "2025-10-08",
   "avatar": "https://img.kjsone.com/undefined20251118105306430.jpg?imageSlim",
   "name": "KJSone",
   "bio": "家养一只小泰迪",

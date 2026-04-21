@@ -1,89 +1,116 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', ssr: false, middleware: ['admin-dev-only'] })
+definePageMeta({ layout: 'admin', ssr: false, middleware: ['admin-dev-only'] });
 
-type SocialItem = { label: string; url: string }
+type SocialItem = { label: string; url: string };
+type ProjectItem = { name: string; url: string; desc?: string; icon?: string };
 type SiteData = {
-  title: string
-  since?: string
-  avatar?: string
-  name?: string
-  bio?: string
-  intro?: string
-  social?: SocialItem[]
+  title: string;
+  since?: string;
+  avatar?: string;
+  name?: string;
+  bio?: string;
+  intro?: string;
+  social?: SocialItem[];
+  projects?: ProjectItem[];
   home?: {
-    pinnedSlugs?: string[]
-    featuredSlugs?: string[]
-    latestCount?: number
-    showStats?: boolean
-  }
-}
+    pinnedSlugs?: string[];
+    featuredSlugs?: string[];
+    latestCount?: number;
+    showStats?: boolean;
+  };
+};
 
 const { data, pending, error, refresh } = await useFetch<SiteData>('/api/admin/site', {
-  server: false
-})
+  server: false,
+});
 
 const form = reactive<SiteData>({
   title: '',
   home: { latestCount: 10, showStats: true },
-  social: []
-})
+  social: [],
+  projects: [],
+});
 
-const pinnedInput = ref('')
-const featuredInput = ref('')
+const pinnedInput = ref('');
+const featuredInput = ref('');
 
 watchEffect(() => {
-  if (!data.value) return
-  Object.assign(form, data.value)
-  form.home = { latestCount: 10, showStats: true, ...(data.value.home || {}) }
-  form.social = Array.isArray(data.value.social) ? [...data.value.social] : []
-  pinnedInput.value = (form.home?.pinnedSlugs || []).join(', ')
-  featuredInput.value = (form.home?.featuredSlugs || []).join(', ')
-})
+  if (!data.value) return;
+  Object.assign(form, data.value);
+  form.home = { latestCount: 10, showStats: true, ...(data.value.home || {}) };
+  form.social = Array.isArray(data.value.social) ? [...data.value.social] : [];
+  form.projects = Array.isArray(data.value.projects) ? [...data.value.projects] : [];
+  pinnedInput.value = (form.home?.pinnedSlugs || []).join(', ');
+  featuredInput.value = (form.home?.featuredSlugs || []).join(', ');
+});
 
 function addSocial() {
-  form.social = form.social || []
-  form.social.push({ label: '', url: '' })
+  form.social = form.social || [];
+  form.social.push({ label: '', url: '' });
 }
 function removeSocial(i: number) {
-  form.social = (form.social || []).filter((_, idx) => idx !== i)
+  form.social = (form.social || []).filter((_, idx) => idx !== i);
 }
 
-const saving = ref(false)
-const msg = ref<string | null>(null)
+function addProject() {
+  form.projects = form.projects || [];
+  form.projects.push({ name: '', url: '', icon: '', desc: '' });
+}
+function removeProject(i: number) {
+  form.projects = (form.projects || []).filter((_, idx) => idx !== i);
+}
+
+const saving = ref(false);
+const msg = ref<string | null>(null);
 
 async function onSave() {
-  msg.value = null
-  saving.value = true
+  msg.value = null;
+  saving.value = true;
   try {
     const pinned = pinnedInput.value
       .split(',')
       .map((s) => s.trim())
-      .filter(Boolean)
+      .filter(Boolean);
     const featured = featuredInput.value
       .split(',')
       .map((s) => s.trim())
-      .filter(Boolean)
+      .filter(Boolean);
 
     const payload: SiteData = {
       ...form,
       title: (form.title || '').trim(),
       social: (form.social || []).filter((s) => s.label || s.url),
+      projects: (form.projects || [])
+        .map((p) => ({
+          name: String(p.name || '').trim(),
+          url: String(p.url || '').trim(),
+          icon: String(p.icon || '').trim(),
+          desc: String(p.desc || '').trim(),
+        }))
+        .filter((p) => p.name || p.url)
+        .map((p) => ({
+          name: p.name,
+          url: p.url,
+          ...(p.icon ? { icon: p.icon } : {}),
+          ...(p.desc ? { desc: p.desc } : {}),
+        })),
       home: {
         ...(form.home || {}),
         pinnedSlugs: pinned,
         featuredSlugs: featured,
         latestCount: Number(form.home?.latestCount ?? 10),
-        showStats: Boolean(form.home?.showStats)
-      }
-    }
-    await $fetch('/api/admin/site', { method: 'PUT' as any, body: payload } as any)
-    msg.value = '已保存'
-    await refresh()
+        showStats: Boolean(form.home?.showStats),
+      },
+    };
+    await $fetch('/api/admin/site', { method: 'PUT' as any, body: payload } as any);
+    msg.value = '已保存';
+    await refresh();
+    await refreshNuxtData(['site', 'site:layout']);
   } catch (e: any) {
-    msg.value = e?.data?.message || e?.message || '保存失败'
+    msg.value = e?.data?.message || e?.message || '保存失败';
   } finally {
-    saving.value = false
-    setTimeout(() => (msg.value = null), 1500)
+    saving.value = false;
+    setTimeout(() => (msg.value = null), 1500);
   }
 }
 </script>
@@ -145,13 +172,33 @@ async function onSave() {
             <div
               v-for="(s, i) in form.social || []"
               :key="i"
-              class="grid grid-cols-1 md:grid-cols-[140px_1fr_auto] gap-2 items-center"
-            >
+              class="grid grid-cols-1 md:grid-cols-[140px_1fr_auto] gap-2 items-center">
               <input v-model="s.label" class="tw-input" type="text" placeholder="名称（GitHub）" />
               <input v-model="s.url" class="tw-input" type="text" placeholder="链接（https://...）" />
               <button class="tw-btn-danger px-2 py-1 text-xs" type="button" @click="removeSocial(i)">删除</button>
             </div>
             <button class="tw-btn-ghost px-2 py-1 text-xs" type="button" @click="addSocial">添加一项</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-500 mb-2">我的项目（首页左侧栏）</label>
+          <div class="space-y-2">
+            <div
+              v-for="(p, i) in form.projects || []"
+              :key="i"
+              class="grid grid-cols-1 md:grid-cols-[160px_1fr_auto] gap-2 items-start">
+              <div class="space-y-2">
+                <input v-model="p.name" class="tw-input" type="text" placeholder="项目名称" />
+                <input v-model="p.icon" class="tw-input" type="text" placeholder="图标（可选，例如 🚀）" />
+              </div>
+              <div class="space-y-2">
+                <input v-model="p.url" class="tw-input" type="text" placeholder="链接（https://...）" />
+                <input v-model="p.desc" class="tw-input" type="text" placeholder="描述（可选）" />
+              </div>
+              <button class="tw-btn-danger px-2 py-1 text-xs" type="button" @click="removeProject(i)">删除</button>
+            </div>
+            <button class="tw-btn-ghost px-2 py-1 text-xs" type="button" @click="addProject">添加项目</button>
           </div>
         </div>
 
@@ -176,8 +223,7 @@ async function onSave() {
             <label class="relative inline-flex items-center cursor-pointer">
               <input v-model="form.home!.showStats" type="checkbox" class="sr-only peer" />
               <span
-                class="h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-900 transition after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5"
-              />
+                class="h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-900 transition after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5" />
             </label>
           </div>
         </div>

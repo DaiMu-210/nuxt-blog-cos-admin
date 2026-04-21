@@ -61,8 +61,25 @@ bun run dev
 $env:NUXT_ADMIN_PASSWORD="请替换成强密码"
 # 可选：会话签名密钥（不配置时默认使用 NUXT_ADMIN_PASSWORD）
 $env:NUXT_ADMIN_SESSION_SECRET="请替换成另一个随机字符串"
+# 可选：评论仓库（owner/repo），用于 utterances
+$env:NUXT_PUBLIC_UTTERANCES_REPO="owner/repo"
+# 可选：评论主题（默认 github-light）
+$env:NUXT_PUBLIC_UTTERANCES_THEME="github-light"
 pnpm dev
 ```
+
+### 评论（utterances）
+
+1) 在 GitHub 仓库安装 utterances App：<https://github.com/apps/utterances>
+2) 确保该仓库开启 Issues
+3) 配置环境变量：
+
+```powershell
+$env:NUXT_PUBLIC_UTTERANCES_REPO="owner/repo"
+$env:NUXT_PUBLIC_UTTERANCES_THEME="github-light"
+```
+
+文章详情页将自动加载评论区；按页面路径（`pathname`）关联对应 issue。
 
 ## Production
 
