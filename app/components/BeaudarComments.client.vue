@@ -5,12 +5,14 @@ const props = withDefaults(
     issueTerm?: string;
     theme?: string;
     label?: string;
+    branch?: string;
   }>(),
   {
     repo: '',
     issueTerm: 'pathname',
     theme: 'github-light',
     label: '',
+    branch: '',
   },
 );
 
@@ -41,6 +43,15 @@ const resolvedTheme = computed(
     'github-light',
 );
 const resolvedIssueTerm = computed(() => props.issueTerm || 'pathname');
+const resolvedBranch = computed(() =>
+  String(
+    props.branch ||
+      site.value?.comments?.beaudarBranch ||
+      site.value?.beaudarBranch ||
+      (config.public as any).beaudarBranch ||
+      '',
+  ).trim(),
+);
 const resolvedOrigin = computed(() =>
   String(
     (site.value?.comments?.beaudarOrigin || site.value?.beaudarOrigin || (config.public as any).beaudarOrigin) ??
@@ -54,6 +65,7 @@ const instanceKey = computed(() =>
   [
     resolvedRepo.value,
     resolvedOrigin.value,
+    resolvedBranch.value,
     resolvedIssueTerm.value,
     route.fullPath,
     resolvedTheme.value,
@@ -76,6 +88,7 @@ function mountBeaudar() {
   script.setAttribute('issue-term', resolvedIssueTerm.value);
   script.setAttribute('theme', resolvedTheme.value);
   if (props.label) script.setAttribute('label', props.label);
+  if (resolvedBranch.value) script.setAttribute('branch', resolvedBranch.value);
   script.onerror = () => {
     loadError.value = '评论脚本加载失败，请检查浏览器拦截插件、隐私设置或网络代理。';
   };

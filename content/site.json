@@ -32,7 +32,9 @@
   ],
   "comments": {
     "beaudarRepo": "DaiMu-210/nuxt-blog-cos-admin",
-    "beaudarTheme": "github-light"
+    "beaudarTheme": "github-light",
+    "beaudarBranch": "main",
+    "beaudarOrigin": "https://beaudar.lipk.org"
   },
   "since": "2025-10-08",
   "avatar": "https://img.kjsone.com/undefined20251118105306430.jpg?imageSlim",

@@ -10,6 +10,8 @@ export default defineNuxtConfig({
       siteUrl: '',
       beaudarRepo: '',
       beaudarTheme: 'github-light',
+      beaudarOrigin: 'https://beaudar.lipk.org',
+      beaudarBranch: '',
       utterancesRepo: 'DaiMu-210/nuxt-blog-cos-admin',
       utterancesTheme: 'github-light',
     },

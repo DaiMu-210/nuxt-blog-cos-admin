@@ -20,6 +20,7 @@ export type SiteData = {
     beaudarRepo?: string;
     beaudarTheme?: string;
     beaudarOrigin?: string;
+    beaudarBranch?: string;
   };
   home?: {
     pinnedSlugs?: string[];
