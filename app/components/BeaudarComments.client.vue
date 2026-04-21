@@ -19,6 +19,10 @@ const route = useRoute();
 const config = useRuntimeConfig();
 const { data: site } = useNuxtData<any>('site:layout');
 const loadError = ref('');
+const lastCleanedBeaudarParam = ref('');
+
+let authCleanupTimeoutId: number | null = null;
+let authMessageHandler: ((event: MessageEvent) => void) | null = null;
 
 const siteBeaudarRepo = computed(() => String(site.value?.comments?.beaudarRepo || site.value?.beaudarRepo || ''));
 const siteBeaudarTheme = computed(() =>
@@ -37,19 +41,35 @@ const resolvedTheme = computed(
     'github-light',
 );
 const resolvedIssueTerm = computed(() => props.issueTerm || 'pathname');
+const resolvedOrigin = computed(() =>
+  String(
+    (site.value?.comments?.beaudarOrigin || site.value?.beaudarOrigin || (config.public as any).beaudarOrigin) ??
+      'https://beaudar.lipk.org',
+  )
+    .trim()
+    .replace(/\/+$/, ''),
+);
 
 const instanceKey = computed(() =>
-  [resolvedRepo.value, resolvedIssueTerm.value, route.fullPath, resolvedTheme.value, props.label].join('|'),
+  [
+    resolvedRepo.value,
+    resolvedOrigin.value,
+    resolvedIssueTerm.value,
+    route.fullPath,
+    resolvedTheme.value,
+    props.label,
+  ].join('|'),
 );
 
 function mountBeaudar() {
   if (!hostRef.value) return;
   hostRef.value.innerHTML = '';
   loadError.value = '';
+  teardownAuthCleanup();
   if (!resolvedRepo.value) return;
 
   const script = document.createElement('script');
-  script.src = 'https://beaudar.lipk.org/client.js';
+  script.src = `${resolvedOrigin.value}/client.js`;
   script.async = true;
   script.crossOrigin = 'anonymous';
   script.setAttribute('repo', resolvedRepo.value);
@@ -60,6 +80,8 @@ function mountBeaudar() {
     loadError.value = '评论脚本加载失败，请检查浏览器拦截插件、隐私设置或网络代理。';
   };
   hostRef.value.appendChild(script);
+
+  setupAuthCleanup();
 }
 
 watch(instanceKey, () => {
@@ -69,6 +91,70 @@ watch(instanceKey, () => {
 onMounted(() => {
   mountBeaudar();
 });
+
+onBeforeUnmount(() => {
+  teardownAuthCleanup();
+});
+
+function getBeaudarParamFromUrl() {
+  if (typeof window === 'undefined') return '';
+  try {
+    return new URL(window.location.href).searchParams.get('beaudar') || '';
+  } catch {
+    return '';
+  }
+}
+
+function normalizeOrigin(value: string) {
+  try {
+    return new URL(value).origin;
+  } catch {
+    return value.replace(/\/+$/, '');
+  }
+}
+
+function teardownAuthCleanup() {
+  if (typeof window !== 'undefined' && authMessageHandler) {
+    window.removeEventListener('message', authMessageHandler);
+  }
+  authMessageHandler = null;
+  if (authCleanupTimeoutId != null && typeof window !== 'undefined') {
+    window.clearTimeout(authCleanupTimeoutId);
+  }
+  authCleanupTimeoutId = null;
+}
+
+function cleanAuthParam() {
+  if (typeof window === 'undefined') return;
+  const token = getBeaudarParamFromUrl();
+  if (!token) return;
+  if (lastCleanedBeaudarParam.value === token) return;
+  lastCleanedBeaudarParam.value = token;
+  teardownAuthCleanup();
+  try {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('beaudar');
+    window.history.replaceState(window.history.state, '', url.toString());
+  } catch {}
+}
+
+function setupAuthCleanup() {
+  if (typeof window === 'undefined') return;
+  const token = getBeaudarParamFromUrl();
+  if (!token) return;
+
+  const expectedOrigin = normalizeOrigin(resolvedOrigin.value);
+
+  authMessageHandler = (event: MessageEvent) => {
+    if (event.origin !== expectedOrigin) return;
+    cleanAuthParam();
+  };
+  window.addEventListener('message', authMessageHandler);
+
+  authCleanupTimeoutId = window.setTimeout(() => {
+    cleanAuthParam();
+  }, 15000);
+}
 </script>
 
 <template>

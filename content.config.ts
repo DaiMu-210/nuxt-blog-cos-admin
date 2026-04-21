@@ -48,6 +48,7 @@ export default defineContentConfig({
           .object({
             beaudarRepo: z.string().optional(),
             beaudarTheme: z.string().optional(),
+            beaudarOrigin: z.string().optional(),
           })
           .optional(),
         home: z

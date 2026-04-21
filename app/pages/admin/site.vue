@@ -15,6 +15,7 @@ type SiteData = {
   comments?: {
     beaudarRepo?: string;
     beaudarTheme?: string;
+    beaudarOrigin?: string;
   };
   home?: {
     pinnedSlugs?: string[];
@@ -33,7 +34,7 @@ const form = reactive<SiteData>({
   home: { latestCount: 10, showStats: true },
   social: [],
   projects: [],
-  comments: { beaudarRepo: '', beaudarTheme: 'github-light' },
+  comments: { beaudarRepo: '', beaudarTheme: 'github-light', beaudarOrigin: 'https://beaudar.lipk.org' },
 });
 
 const pinnedInput = ref('');
@@ -48,6 +49,7 @@ watchEffect(() => {
   form.comments = {
     beaudarRepo: String((data.value as any)?.comments?.beaudarRepo || ''),
     beaudarTheme: String((data.value as any)?.comments?.beaudarTheme || 'github-light'),
+    beaudarOrigin: String((data.value as any)?.comments?.beaudarOrigin || 'https://beaudar.lipk.org'),
   };
   pinnedInput.value = (form.home?.pinnedSlugs || []).join(', ');
   featuredInput.value = (form.home?.featuredSlugs || []).join(', ');
@@ -113,6 +115,8 @@ async function onSave() {
       comments: {
         beaudarRepo: String(form.comments?.beaudarRepo || '').trim(),
         beaudarTheme: String(form.comments?.beaudarTheme || 'github-light').trim() || 'github-light',
+        beaudarOrigin:
+          String(form.comments?.beaudarOrigin || 'https://beaudar.lipk.org').trim() || 'https://beaudar.lipk.org',
       },
     };
     await $fetch('/api/admin/site', { method: 'PUT' as any, body: payload } as any);
@@ -228,6 +232,15 @@ async function onSave() {
               <option value="preferred-color-scheme">preferred-color-scheme</option>
             </select>
           </div>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-500 mb-2">Beaudar 服务地址</label>
+          <input
+            v-model="form.comments!.beaudarOrigin"
+            class="tw-input"
+            type="text"
+            placeholder="https://beaudar.lipk.org" />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">

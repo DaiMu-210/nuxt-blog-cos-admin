@@ -19,6 +19,7 @@ export type SiteData = {
   comments?: {
     beaudarRepo?: string;
     beaudarTheme?: string;
+    beaudarOrigin?: string;
   };
   home?: {
     pinnedSlugs?: string[];
