@@ -61,25 +61,44 @@ bun run dev
 $env:NUXT_ADMIN_PASSWORD="请替换成强密码"
 # 可选：会话签名密钥（不配置时默认使用 NUXT_ADMIN_PASSWORD）
 $env:NUXT_ADMIN_SESSION_SECRET="请替换成另一个随机字符串"
-# 可选：评论仓库（owner/repo），用于 utterances
-$env:NUXT_PUBLIC_UTTERANCES_REPO="owner/repo"
+# 可选：站点地址（用于 RSS 等需要绝对链接的功能）
+$env:NUXT_PUBLIC_SITE_URL="https://your-domain.com"
+# 可选：评论仓库（owner/repo），用于 beaudar
+$env:NUXT_PUBLIC_BEAUDAR_REPO="owner/repo"
 # 可选：评论主题（默认 github-light）
-$env:NUXT_PUBLIC_UTTERANCES_THEME="github-light"
+$env:NUXT_PUBLIC_BEAUDAR_THEME="github-light"
 pnpm dev
 ```
 
-### 评论（utterances）
+### 评论（beaudar）
 
-1) 在 GitHub 仓库安装 utterances App：<https://github.com/apps/utterances>
-2) 确保该仓库开启 Issues
-3) 配置环境变量：
+1. 确保评论仓库为公开仓库，且开启 Issues
+2. 在本地控制台 `站点设置` 中配置：
+
+- 评论仓库（Beaudar，owner/repo）
+- 评论主题
+
+  3)（可选）也可以用环境变量作为兜底（适合 CI/CD 构建阶段注入）：
 
 ```powershell
-$env:NUXT_PUBLIC_UTTERANCES_REPO="owner/repo"
-$env:NUXT_PUBLIC_UTTERANCES_THEME="github-light"
+$env:NUXT_PUBLIC_BEAUDAR_REPO="owner/repo"
+$env:NUXT_PUBLIC_BEAUDAR_THEME="github-light"
 ```
 
 文章详情页将自动加载评论区；按页面路径（`pathname`）关联对应 issue。
+如果你在本地开发环境测试评论发布，可能需要在评论仓库中配置 `beaudar.json` 允许 `http://localhost:3000`（或实际端口）的来源。
+
+### RSS 订阅
+
+访问：
+
+- `http://localhost:3000/rss.xml`
+
+静态部署时会在构建阶段预渲染 `rss.xml`。建议配置：
+
+```powershell
+$env:NUXT_PUBLIC_SITE_URL="https://your-domain.com"
+```
 
 ## Production
 
@@ -132,8 +151,8 @@ pnpm run generate:dist
 
 流水线会执行：
 
-1) `pnpm install`
-2) `pnpm run generate:dist`（生成 `dist/`）
-3) 使用 COSCLI 将 `dist/` 同步到 `cos://${COS_BUCKET}/`（带 `--delete`）
+1. `pnpm install`
+2. `pnpm run generate:dist`（生成 `dist/`）
+3. 使用 COSCLI 将 `dist/` 同步到 `cos://${COS_BUCKET}/`（带 `--delete`）
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

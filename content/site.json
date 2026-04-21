@@ -30,6 +30,10 @@
       "desc": "一个简单的装修项目管理系统"
     }
   ],
+  "comments": {
+    "beaudarRepo": "DaiMu-210/nuxt-blog-cos-admin",
+    "beaudarTheme": "github-light"
+  },
   "since": "2025-10-08",
   "avatar": "https://img.kjsone.com/undefined20251118105306430.jpg?imageSlim",
   "name": "KJSone",

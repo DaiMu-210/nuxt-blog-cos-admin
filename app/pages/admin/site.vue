@@ -12,6 +12,10 @@ type SiteData = {
   intro?: string;
   social?: SocialItem[];
   projects?: ProjectItem[];
+  comments?: {
+    beaudarRepo?: string;
+    beaudarTheme?: string;
+  };
   home?: {
     pinnedSlugs?: string[];
     featuredSlugs?: string[];
@@ -29,6 +33,7 @@ const form = reactive<SiteData>({
   home: { latestCount: 10, showStats: true },
   social: [],
   projects: [],
+  comments: { beaudarRepo: '', beaudarTheme: 'github-light' },
 });
 
 const pinnedInput = ref('');
@@ -40,6 +45,10 @@ watchEffect(() => {
   form.home = { latestCount: 10, showStats: true, ...(data.value.home || {}) };
   form.social = Array.isArray(data.value.social) ? [...data.value.social] : [];
   form.projects = Array.isArray(data.value.projects) ? [...data.value.projects] : [];
+  form.comments = {
+    beaudarRepo: String((data.value as any)?.comments?.beaudarRepo || ''),
+    beaudarTheme: String((data.value as any)?.comments?.beaudarTheme || 'github-light'),
+  };
   pinnedInput.value = (form.home?.pinnedSlugs || []).join(', ');
   featuredInput.value = (form.home?.featuredSlugs || []).join(', ');
 });
@@ -100,6 +109,10 @@ async function onSave() {
         featuredSlugs: featured,
         latestCount: Number(form.home?.latestCount ?? 10),
         showStats: Boolean(form.home?.showStats),
+      },
+      comments: {
+        beaudarRepo: String(form.comments?.beaudarRepo || '').trim(),
+        beaudarTheme: String(form.comments?.beaudarTheme || 'github-light').trim() || 'github-light',
       },
     };
     await $fetch('/api/admin/site', { method: 'PUT' as any, body: payload } as any);
@@ -199,6 +212,21 @@ async function onSave() {
               <button class="tw-btn-danger px-2 py-1 text-xs" type="button" @click="removeProject(i)">删除</button>
             </div>
             <button class="tw-btn-ghost px-2 py-1 text-xs" type="button" @click="addProject">添加项目</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-slate-500 mb-2">评论仓库（Beaudar，owner/repo）</label>
+            <input v-model="form.comments!.beaudarRepo" class="tw-input" type="text" placeholder="owner/repo" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-2">评论主题</label>
+            <select v-model="form.comments!.beaudarTheme" class="tw-input">
+              <option value="github-light">github-light</option>
+              <option value="github-dark">github-dark</option>
+              <option value="preferred-color-scheme">preferred-color-scheme</option>
+            </select>
           </div>
         </div>
 

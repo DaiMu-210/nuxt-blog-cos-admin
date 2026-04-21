@@ -42,7 +42,7 @@ const tocLinks = computed(() => (post.value as any)?.body?.toc?.links || []);
           <ContentRenderer :value="post as any" />
         </div>
 
-        <UtterancesComments />
+        <BeaudarComments />
       </div>
     </div>
 

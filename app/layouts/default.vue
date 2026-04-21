@@ -2,6 +2,10 @@
 const { data: site } = await useAsyncData('site:layout', () => queryCollection('site').first());
 const isDev = import.meta.dev;
 
+useHead({
+  link: [{ rel: 'alternate', type: 'application/rss+xml', title: 'RSS', href: '/rss.xml' }],
+});
+
 const route = useRoute();
 const isSearchOpen = ref(false);
 const navItems = computed(() => [

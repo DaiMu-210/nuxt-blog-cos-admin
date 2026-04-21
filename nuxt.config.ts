@@ -7,7 +7,10 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      utterancesRepo: '',
+      siteUrl: '',
+      beaudarRepo: '',
+      beaudarTheme: 'github-light',
+      utterancesRepo: 'DaiMu-210/nuxt-blog-cos-admin',
       utterancesTheme: 'github-light',
     },
   },
@@ -45,6 +48,7 @@ export default defineNuxtConfig({
     // 避免 generate 时尝试预渲染本地管理端与 API
     prerender: {
       ignore: ['/admin', '/admin/**', '/api', '/api/**'],
+      routes: ['/rss.xml'],
     },
   },
 

@@ -44,6 +44,12 @@ export default defineContentConfig({
             }),
           )
           .optional(),
+        comments: z
+          .object({
+            beaudarRepo: z.string().optional(),
+            beaudarTheme: z.string().optional(),
+          })
+          .optional(),
         home: z
           .object({
             pinnedSlugs: z.array(z.string()).optional(),
