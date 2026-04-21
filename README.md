@@ -140,6 +140,29 @@ bun run preview
 pnpm run generate:dist
 ```
 
+### 本地发布到 COS（无需 CNB）
+
+你可以在本机直接构建并同步到 COS 桶根目录（默认带 `--delete`，会删除桶内多余文件，请确保该桶根目录只用于本站点）。
+
+需要配置环境变量：
+
+- `COS_BUCKET`：例如 `examplebucket-1250000000`
+- `COS_REGION`：例如 `ap-guangzhou`
+- `COS_SECRET_ID`
+- `COS_SECRET_KEY`
+
+执行发布（会先运行 `generate:dist` 生成 `dist/`）：
+
+```bash
+pnpm run deploy:cos
+```
+
+coscli 获取策略：
+
+- 若你本机已安装 `coscli` 且在 PATH 中，脚本会直接使用。
+- 若未安装，可设置 `COSCLI_PATH` 指向本机的 coscli 可执行文件。
+- 若以上都没有，脚本会尝试自动下载 coscli；如遇到网络/证书/文件名变化问题，可用 `COSCLI_DOWNLOAD_URL` 指定下载地址。
+
 ### CNB.cool 自动部署到 COS
 
 仓库根目录已包含 `.cnb.yml`，你需要在 CNB 的变量/密钥中配置以下环境变量：

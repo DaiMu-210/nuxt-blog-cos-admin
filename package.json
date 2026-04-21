@@ -7,6 +7,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "generate:dist": "nuxt generate && node scripts/export-dist.mjs",
+    "deploy:cos": "node scripts/deploy-cos.mjs",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
