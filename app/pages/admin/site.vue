@@ -155,7 +155,9 @@ async function submitProjectDialog() {
   } else if (targetProjectId.value) {
     const idx = list.findIndex((x) => x._id === targetProjectId.value);
     if (idx < 0) return;
-    list[idx] = { ...list[idx], name, url, icon, desc };
+    const current = list[idx];
+    if (!current) return;
+    list[idx] = { ...current, _id: current._id, name, url, icon, desc };
   }
   form.projects = list as any;
   projectDialogOpen.value = false;
@@ -244,8 +246,10 @@ async function onSave() {
   <section class="mx-auto max-w-[1080px]">
     <div class="mb-4 flex items-start justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">站点设置</h1>
-        <p class="mt-2 text-sm text-slate-500">这些配置会写入 content/site.json，仅在本地控制台可编辑。</p>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-50">站点设置</h1>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          这些配置会写入 content/site.json，仅在本地控制台可编辑。
+        </p>
       </div>
       <div class="flex items-center gap-2">
         <button class="tw-btn-primary" type="button" @click="onSave" :disabled="savingAll || pending">
@@ -255,44 +259,46 @@ async function onSave() {
       </div>
     </div>
 
-    <p v-if="error" class="text-sm text-red-700">加载失败：{{ error?.data?.message || error?.message }}</p>
+    <p v-if="error" class="text-sm text-red-700 dark:text-red-300">
+      加载失败：{{ error?.data?.message || error?.message }}
+    </p>
 
     <div v-else class="tw-card p-4">
       <div class="space-y-4">
         <div>
-          <label class="block text-xs text-slate-500 mb-2">博客标题</label>
+          <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">博客标题</label>
           <input v-model="form.title" class="tw-input" type="text" placeholder="例如：我的博客" />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs text-slate-500 mb-2">建站时间（since）</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">建站时间（since）</label>
             <input v-model="form.since" class="tw-input" type="date" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">头像（URL 或 /public 路径）</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">头像（URL 或 /public 路径）</label>
             <input v-model="form.avatar" class="tw-input" type="text" placeholder="/avatar.png 或 https://..." />
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs text-slate-500 mb-2">昵称</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">昵称</label>
             <input v-model="form.name" class="tw-input" type="text" placeholder="你的名字" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">一句话简介</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">一句话简介</label>
             <input v-model="form.bio" class="tw-input" type="text" placeholder="一句话简介" />
           </div>
         </div>
 
         <div>
-          <label class="block text-xs text-slate-500 mb-2">个人介绍</label>
+          <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">个人介绍</label>
           <textarea v-model="form.intro" class="tw-textarea min-h-[96px]" rows="3" placeholder="更长的介绍（可选）" />
         </div>
 
         <div>
-          <label class="block text-xs text-slate-500 mb-2">社交链接</label>
+          <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">社交链接</label>
           <div class="space-y-2">
             <SortableList
               :model-value="(form.social || []) as any"
@@ -302,9 +308,9 @@ async function onSave() {
               @change="() => saveSiteLists('已保存')">
               <template #default="{ item: s, handleAttrs }">
                 <div
-                  class="flex flex-col gap-2 rounded-xl border border-slate-100 bg-white p-3 md:flex-row md:items-center">
+                  class="flex flex-col gap-2 rounded-xl border border-slate-100 bg-white p-3 md:flex-row md:items-center dark:border-slate-800 dark:bg-slate-950">
                   <button
-                    class="shrink-0 rounded-lg border border-slate-200 bg-white px-2 py-2 cursor-grab active:cursor-grabbing"
+                    class="shrink-0 rounded-lg border border-slate-200 bg-white px-2 py-2 cursor-grab active:cursor-grabbing dark:border-slate-700 dark:bg-slate-950"
                     type="button"
                     v-bind="handleAttrs"
                     :disabled="savingLists || savingAll || pending"
@@ -342,7 +348,7 @@ async function onSave() {
         </div>
 
         <div>
-          <label class="block text-xs text-slate-500 mb-2">我的项目（首页左侧栏）</label>
+          <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">我的项目（首页左侧栏）</label>
           <div class="space-y-2">
             <SortableList
               :model-value="(form.projects || []) as any"
@@ -351,26 +357,33 @@ async function onSave() {
               @update:modelValue="(v) => (form.projects = v as any)"
               @change="() => saveSiteLists('已保存')">
               <template #default="{ item: p, handleAttrs }">
-                <div class="flex gap-3 rounded-xl border border-slate-100 bg-white p-3">
+                <div
+                  class="flex gap-3 rounded-xl border border-slate-100 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
                   <button
-                    class="shrink-0 rounded-lg border border-slate-200 bg-white px-2 py-2 cursor-grab active:cursor-grabbing"
+                    class="shrink-0 rounded-lg border border-slate-200 bg-white px-2 py-2 cursor-grab active:cursor-grabbing dark:border-slate-700 dark:bg-slate-950"
                     type="button"
                     v-bind="handleAttrs"
                     :disabled="savingLists || savingAll || pending"
                     aria-label="拖动排序">
                     <div class="flex flex-col gap-1">
-                      <span class="h-0.5 w-4 rounded bg-slate-300" />
-                      <span class="h-0.5 w-4 rounded bg-slate-300" />
-                      <span class="h-0.5 w-4 rounded bg-slate-300" />
+                      <span class="h-0.5 w-4 rounded bg-slate-300 dark:bg-slate-600" />
+                      <span class="h-0.5 w-4 rounded bg-slate-300 dark:bg-slate-600" />
+                      <span class="h-0.5 w-4 rounded bg-slate-300 dark:bg-slate-600" />
                     </div>
                   </button>
                   <div class="min-w-0 flex-1">
                     <div class="flex items-center gap-2">
                       <div v-if="(p as any).icon" class="text-lg">{{ (p as any).icon }}</div>
-                      <div class="font-semibold text-slate-900 truncate">{{ (p as any).name || '未命名项目' }}</div>
+                      <div class="font-semibold text-slate-900 truncate dark:text-slate-50">
+                        {{ (p as any).name || '未命名项目' }}
+                      </div>
                     </div>
-                    <div v-if="(p as any).desc" class="mt-1 text-slate-700">{{ (p as any).desc }}</div>
-                    <div v-if="(p as any).url" class="mt-1 text-xs text-slate-500 break-all">{{ (p as any).url }}</div>
+                    <div v-if="(p as any).desc" class="mt-1 text-slate-700 dark:text-slate-200">
+                      {{ (p as any).desc }}
+                    </div>
+                    <div v-if="(p as any).url" class="mt-1 text-xs text-slate-500 break-all dark:text-slate-400">
+                      {{ (p as any).url }}
+                    </div>
                   </div>
                   <div class="flex items-center gap-2 shrink-0">
                     <button
@@ -403,11 +416,11 @@ async function onSave() {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs text-slate-500 mb-2">评论仓库（Beaudar，owner/repo）</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">评论仓库（Beaudar，owner/repo）</label>
             <input v-model="form.comments!.beaudarRepo" class="tw-input" type="text" placeholder="owner/repo" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">评论主题</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">评论主题</label>
             <select v-model="form.comments!.beaudarTheme" class="tw-input">
               <option value="github-light">github-light</option>
               <option value="github-dark">github-dark</option>
@@ -417,7 +430,7 @@ async function onSave() {
         </div>
 
         <div>
-          <label class="block text-xs text-slate-500 mb-2">Beaudar 服务地址</label>
+          <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">Beaudar 服务地址</label>
           <input
             v-model="form.comments!.beaudarOrigin"
             class="tw-input"
@@ -426,32 +439,32 @@ async function onSave() {
         </div>
 
         <div>
-          <label class="block text-xs text-slate-500 mb-2">Beaudar 分支（branch，可选）</label>
+          <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">Beaudar 分支（branch，可选）</label>
           <input v-model="form.comments!.beaudarBranch" class="tw-input" type="text" placeholder="main" />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs text-slate-500 mb-2">置顶文章 Slug（逗号分隔）</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">置顶文章 Slug（逗号分隔）</label>
             <input v-model="pinnedInput" class="tw-input" type="text" placeholder="2026-04-19-hello, xxx" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">精选文章 Slug（逗号分隔）</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">精选文章 Slug（逗号分隔）</label>
             <input v-model="featuredInput" class="tw-input" type="text" placeholder="2026-04-19-post, yyy" />
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs text-slate-500 mb-2">首页最新文章数量</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">首页最新文章数量</label>
             <input v-model="form.home!.latestCount" class="tw-input" type="number" min="1" step="1" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">显示统计信息</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">显示统计信息</label>
             <label class="relative inline-flex items-center cursor-pointer">
               <input v-model="form.home!.showStats" type="checkbox" class="sr-only peer" />
               <span
-                class="h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-900 transition after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5" />
+                class="h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-900 transition after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5 dark:bg-slate-800 dark:peer-checked:bg-slate-200 dark:after:bg-slate-950" />
             </label>
           </div>
         </div>
@@ -469,20 +482,20 @@ async function onSave() {
         <div class="space-y-3">
           <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
             <div>
-              <label class="block text-xs text-slate-500 mb-2">项目名称</label>
+              <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">项目名称</label>
               <input v-model="projectForm.name" class="tw-input" type="text" placeholder="例如：我的工具集" />
             </div>
             <div>
-              <label class="block text-xs text-slate-500 mb-2">图标（可选）</label>
+              <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">图标（可选）</label>
               <input v-model="projectForm.icon" class="tw-input" type="text" placeholder="例如：🚀" />
             </div>
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">链接</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">链接</label>
             <input v-model="projectForm.url" class="tw-input" type="text" placeholder="https://..." />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">描述（可选）</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">描述（可选）</label>
             <input v-model="projectForm.desc" class="tw-input" type="text" placeholder="一句话描述" />
           </div>
         </div>

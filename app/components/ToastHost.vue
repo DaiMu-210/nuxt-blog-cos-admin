@@ -6,9 +6,9 @@ const toast = useToast();
 const items = computed(() => (Array.isArray(toast.toasts.value) ? toast.toasts.value.filter(Boolean) : []));
 
 function kindClass(kind: ToastKind) {
-  if (kind === 'success') return 'border-emerald-200 bg-emerald-50 text-emerald-900';
-  if (kind === 'error') return 'border-red-200 bg-red-50 text-red-900';
-  return 'border-slate-200 bg-white text-slate-900';
+  if (kind === 'success') return 'border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200';
+  if (kind === 'error') return 'border-red-200 bg-red-50 text-red-900 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-200';
+  return 'border-slate-200 bg-white text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100';
 }
 </script>
 

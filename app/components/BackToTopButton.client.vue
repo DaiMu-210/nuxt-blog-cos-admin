@@ -33,7 +33,7 @@ onBeforeUnmount(() => {
   <button
     v-show="visible"
     type="button"
-    class="fixed right-4 bottom-6 z-40 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+    class="fixed right-4 bottom-6 z-40 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900/60 dark:hover:text-slate-50"
     aria-label="返回顶部"
     @click="scrollToTop"
   >

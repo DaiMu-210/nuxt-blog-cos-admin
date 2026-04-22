@@ -76,31 +76,31 @@ watch(
   <Teleport to="body">
     <Transition name="fade">
       <div v-if="open" class="fixed inset-0 z-50 flex items-start justify-center px-4 py-16">
-        <div class="absolute inset-0 bg-slate-900/30" @click="close" />
-        <div class="relative w-full max-w-xl rounded-lg bg-white shadow-lg ring-1 ring-slate-200">
-          <div class="border-b border-slate-100 p-4">
+        <div class="absolute inset-0 bg-slate-900/30 dark:bg-black/60" @click="close" />
+        <div class="relative w-full max-w-xl rounded-lg bg-white shadow-lg ring-1 ring-slate-200 dark:bg-slate-950 dark:ring-slate-800">
+          <div class="border-b border-slate-100 p-4 dark:border-slate-800">
             <input
               ref="inputRef"
               v-model="keyword"
               type="text"
               placeholder="搜索文章标题/摘要/分类/标签"
-              class="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-slate-400"
+              class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-slate-500"
               @keydown.enter.prevent="onEnter"
               @keydown.esc.prevent="close" />
           </div>
 
           <div class="p-4">
-            <div v-if="postsReq.pending.value" class="text-sm text-slate-500">加载中...</div>
+            <div v-if="postsReq.pending.value" class="text-sm text-slate-500 dark:text-slate-400">加载中...</div>
 
-            <div v-else-if="!normalized" class="text-sm text-slate-500">输入关键词开始搜索</div>
+            <div v-else-if="!normalized" class="text-sm text-slate-500 dark:text-slate-400">输入关键词开始搜索</div>
 
-            <ul v-else-if="results.length" class="mt-1 max-h-64 divide-y divide-slate-100 overflow-auto">
+            <ul v-else-if="results.length" class="mt-1 max-h-64 divide-y divide-slate-100 overflow-auto dark:divide-slate-800">
               <li v-for="post in results" :key="post.path" class="py-3">
                 <button type="button" class="w-full text-left" @click="goToPost(post.path)">
-                  <div class="text-sm font-semibold text-slate-900">
+                  <div class="text-sm font-semibold text-slate-900 dark:text-slate-50">
                     {{ post.title || post.path }}
                   </div>
-                  <div class="mt-1 text-xs text-slate-500">
+                  <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
                     <span v-if="post.date">{{ post.date }}</span>
                     <span v-if="post.category"> · {{ post.category }}</span>
                     <span v-if="post.tags?.length"> · {{ post.tags.join(', ') }}</span>
@@ -109,9 +109,9 @@ watch(
               </li>
             </ul>
 
-            <div v-else class="text-sm text-slate-500">没有匹配的文章</div>
+            <div v-else class="text-sm text-slate-500 dark:text-slate-400">没有匹配的文章</div>
 
-            <div class="mt-3 text-xs text-slate-400">按 Enter 进行搜索</div>
+            <div class="mt-3 text-xs text-slate-400 dark:text-slate-500">按 Enter 进行搜索</div>
           </div>
         </div>
       </div>

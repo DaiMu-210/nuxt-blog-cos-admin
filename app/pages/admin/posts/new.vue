@@ -54,15 +54,15 @@ async function onCreate() {
   <section class="mx-auto max-w-[1080px]">
     <div class="mb-4 flex items-start justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">新建文章</h1>
-        <p class="mt-2 text-sm text-slate-500">创建后会生成 content/posts/*.md 文件。</p>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-50">新建文章</h1>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">创建后会生成 content/posts/*.md 文件。</p>
       </div>
       <NuxtLink class="tw-btn-ghost" to="/admin/posts">返回列表</NuxtLink>
     </div>
 
     <div class="tw-card p-4 max-w-[720px] space-y-4">
       <div>
-        <label class="block text-xs text-slate-500 mb-2">标题</label>
+        <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">标题</label>
         <input
           v-model="title"
           class="tw-input"
@@ -72,7 +72,7 @@ async function onCreate() {
       </div>
 
       <div>
-        <label class="block text-xs text-slate-500 mb-2">slug（文件名，不含 .md）</label>
+        <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">slug（文件名，不含 .md）</label>
         <input v-model="slug" class="tw-input" type="text" placeholder="例如：2026-04-19-hello 或 tech/hello" />
         <button class="tw-btn-ghost mt-2 px-2 py-1 text-xs" type="button" @click="suggestSlug">根据标题建议</button>
       </div>

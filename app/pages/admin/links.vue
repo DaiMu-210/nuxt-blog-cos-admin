@@ -237,8 +237,8 @@ async function onSorted() {
   <section class="mx-auto max-w-[1080px]">
     <div class="mb-4 flex items-start justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">友链管理</h1>
-        <p class="mt-2 text-sm text-slate-500">会写入 content/links.json，仅在本地控制台可编辑。</p>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-50">友链管理</h1>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">会写入 content/links.json，仅在本地控制台可编辑。</p>
       </div>
       <div class="flex items-center gap-2 flex-wrap">
         <button class="tw-btn-ghost" type="button" :disabled="saving || pending" @click="openNewGroup">新增分组</button>
@@ -247,30 +247,30 @@ async function onSorted() {
       </div>
     </div>
 
-    <p v-if="error" class="text-sm text-red-700">加载失败：{{ error?.data?.message || error?.message }}</p>
+    <p v-if="error" class="text-sm text-red-700 dark:text-red-300">加载失败：{{ error?.data?.message || error?.message }}</p>
 
     <div v-else class="tw-card p-4">
       <div v-if="groups.length" class="space-y-4">
         <SortableList v-model="groups" :item-key="(g) => g._id" :disabled="saving || pending" @change="onSorted">
           <template #default="{ item: g, handleAttrs }">
-            <section class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+            <section class="rounded-2xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-start gap-3 min-w-0">
                   <button
-                    class="mt-1 shrink-0 rounded-lg border border-slate-200 bg-white px-2 py-2 cursor-grab active:cursor-grabbing"
+                    class="mt-1 shrink-0 rounded-lg border border-slate-200 bg-white px-2 py-2 cursor-grab active:cursor-grabbing dark:border-slate-700 dark:bg-slate-950"
                     type="button"
                     v-bind="handleAttrs"
                     :disabled="saving || pending"
                     aria-label="拖动排序">
                     <div class="flex flex-col gap-1">
-                      <span class="h-0.5 w-4 rounded bg-slate-300" />
-                      <span class="h-0.5 w-4 rounded bg-slate-300" />
-                      <span class="h-0.5 w-4 rounded bg-slate-300" />
+                      <span class="h-0.5 w-4 rounded bg-slate-300 dark:bg-slate-600" />
+                      <span class="h-0.5 w-4 rounded bg-slate-300 dark:bg-slate-600" />
+                      <span class="h-0.5 w-4 rounded bg-slate-300 dark:bg-slate-600" />
                     </div>
                   </button>
                   <div class="min-w-0">
-                    <h2 class="text-base font-semibold text-slate-900 truncate">{{ g.name }}</h2>
-                    <div class="mt-1 text-xs text-slate-500">{{ (g.items || []).length }} 条友链</div>
+                    <h2 class="text-base font-semibold text-slate-900 truncate dark:text-slate-50">{{ g.name }}</h2>
+                    <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ (g.items || []).length }} 条友链</div>
                   </div>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap justify-end shrink-0">
@@ -294,30 +294,30 @@ async function onSorted() {
                   @update:modelValue="(v) => (g.items = v)"
                   @change="onSorted">
                   <template #default="{ item: it, handleAttrs: itemHandleAttrs }">
-                    <div class="flex gap-3 rounded-xl border border-slate-100 bg-white p-3">
+                    <div class="flex gap-3 rounded-xl border border-slate-100 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
                       <button
-                        class="shrink-0 rounded-lg border border-slate-200 bg-white px-2 py-2 cursor-grab active:cursor-grabbing"
+                        class="shrink-0 rounded-lg border border-slate-200 bg-white px-2 py-2 cursor-grab active:cursor-grabbing dark:border-slate-700 dark:bg-slate-950"
                         type="button"
                         v-bind="itemHandleAttrs"
                         :disabled="saving || pending"
                         aria-label="拖动排序">
                         <div class="flex flex-col gap-1">
-                          <span class="h-0.5 w-4 rounded bg-slate-300" />
-                          <span class="h-0.5 w-4 rounded bg-slate-300" />
-                          <span class="h-0.5 w-4 rounded bg-slate-300" />
+                          <span class="h-0.5 w-4 rounded bg-slate-300 dark:bg-slate-600" />
+                          <span class="h-0.5 w-4 rounded bg-slate-300 dark:bg-slate-600" />
+                          <span class="h-0.5 w-4 rounded bg-slate-300 dark:bg-slate-600" />
                         </div>
                       </button>
                       <img
                         v-if="it.avatar"
-                        class="h-10 w-10 shrink-0 rounded-full border border-slate-200 object-cover"
+                        class="h-10 w-10 shrink-0 rounded-full border border-slate-200 object-cover dark:border-slate-700"
                         :src="it.avatar"
                         alt="avatar" />
                       <div class="min-w-0 flex-1">
-                        <a class="font-semibold text-slate-900 no-underline hover:underline" :href="it.url" target="_blank" rel="noreferrer">
+                        <a class="font-semibold text-slate-900 no-underline hover:underline dark:text-slate-50" :href="it.url" target="_blank" rel="noreferrer">
                           {{ it.title }}
                         </a>
-                        <div v-if="it.desc" class="mt-1 text-slate-700">{{ it.desc }}</div>
-                        <div class="mt-1 text-xs text-slate-500 break-all">{{ it.url }}</div>
+                        <div v-if="it.desc" class="mt-1 text-slate-700 dark:text-slate-200">{{ it.desc }}</div>
+                        <div class="mt-1 text-xs text-slate-500 break-all dark:text-slate-400">{{ it.url }}</div>
                       </div>
                       <div class="flex items-center gap-2 shrink-0">
                         <button
@@ -340,13 +340,13 @@ async function onSorted() {
                 </SortableList>
               </div>
 
-              <p v-else class="mt-3 text-sm text-slate-500">该分组暂无友链。</p>
+              <p v-else class="mt-3 text-sm text-slate-500 dark:text-slate-400">该分组暂无友链。</p>
             </section>
           </template>
         </SortableList>
       </div>
 
-      <p v-else class="text-sm text-slate-500">还没有分组，点“新增分组”开始。</p>
+      <p v-else class="text-sm text-slate-500 dark:text-slate-400">还没有分组，点“新增分组”开始。</p>
     </div>
 
     <ClientOnly>
@@ -359,7 +359,7 @@ async function onSorted() {
         @submit="submitGroupDialog">
         <div class="space-y-3">
           <div>
-            <label class="block text-xs text-slate-500 mb-2">分组名称</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">分组名称</label>
             <input v-model="groupForm.name" class="tw-input" type="text" placeholder="例如：朋友们" />
           </div>
         </div>
@@ -374,19 +374,19 @@ async function onSorted() {
         @submit="submitItemDialog">
         <div class="space-y-3">
           <div>
-            <label class="block text-xs text-slate-500 mb-2">标题</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">标题</label>
             <input v-model="itemForm.title" class="tw-input" type="text" placeholder="网站名称" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">URL</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">URL</label>
             <input v-model="itemForm.url" class="tw-input" type="text" placeholder="https://..." />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">描述（可选）</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">描述（可选）</label>
             <input v-model="itemForm.desc" class="tw-input" type="text" placeholder="一句话描述" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">头像（可选）</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">头像（可选）</label>
             <input v-model="itemForm.avatar" class="tw-input" type="text" placeholder="https://..." />
           </div>
         </div>

@@ -39,10 +39,10 @@ function confirm() {
   <Teleport to="body">
     <Transition name="fade">
       <div v-if="open" class="fixed inset-0 z-50 flex items-start justify-center px-4 py-16">
-        <div class="absolute inset-0 bg-slate-900/30" @click="close" />
+        <div class="absolute inset-0 bg-slate-900/30 dark:bg-black/60" @click="close" />
         <div class="tw-card relative w-full max-w-md p-4 shadow-lg">
-          <div class="text-base font-semibold text-slate-900">{{ title }}</div>
-          <div v-if="message" class="mt-2 text-sm text-slate-600">{{ message }}</div>
+          <div class="text-base font-semibold text-slate-900 dark:text-slate-50">{{ title }}</div>
+          <div v-if="message" class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ message }}</div>
           <div class="mt-4 flex items-center justify-end gap-2">
             <button class="tw-btn-ghost" type="button" :disabled="loading" @click="close">
               {{ cancelText }}

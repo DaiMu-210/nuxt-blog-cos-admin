@@ -34,24 +34,24 @@ const list = computed(() =>
 
 <template>
   <section>
-    <h1 class="text-2xl font-bold text-slate-900">分类：{{ category }}</h1>
-    <p class="mt-2 mb-4 text-slate-500">
-      <NuxtLink class="text-blue-600 hover:underline" to="/categories">← 返回分类</NuxtLink>
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-50">分类：{{ category }}</h1>
+    <p class="mt-2 mb-4 text-slate-500 dark:text-slate-400">
+      <NuxtLink class="text-blue-600 hover:underline dark:text-blue-400" to="/categories">← 返回分类</NuxtLink>
     </p>
 
-    <ul v-if="list.length" class="divide-y divide-slate-100">
+    <ul v-if="list.length" class="divide-y divide-slate-100 dark:divide-slate-800">
       <li v-for="post in list" :key="post.path" class="py-4">
-        <NuxtLink class="text-lg font-semibold text-slate-900 no-underline hover:underline" :to="post.path">
+        <NuxtLink class="text-lg font-semibold text-slate-900 no-underline hover:underline dark:text-slate-50" :to="post.path">
           {{ post.title || post.path }}
         </NuxtLink>
-        <div class="mt-1 text-sm text-slate-500">
+        <div class="mt-1 text-sm text-slate-500 dark:text-slate-400">
           <span v-if="post.date">{{ post.date }}</span>
           <span v-if="post.tags?.length"> · {{ post.tags.join(', ') }}</span>
         </div>
-        <p v-if="post.description" class="mt-2 text-slate-700">{{ post.description }}</p>
+        <p v-if="post.description" class="mt-2 text-slate-700 dark:text-slate-200">{{ post.description }}</p>
       </li>
     </ul>
 
-    <p v-else class="mt-3 text-slate-500">该分类下还没有文章。</p>
+    <p v-else class="mt-3 text-slate-500 dark:text-slate-400">该分类下还没有文章。</p>
   </section>
 </template>

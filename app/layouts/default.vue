@@ -21,24 +21,30 @@ const navItems = computed(() => [
 ]);
 
 function navLinkClass(active: boolean) {
-  return ['ml-3 text-sm transition', active ? 'text-slate-900 font-semibold' : 'text-slate-700 hover:text-slate-900'];
+  return [
+    'ml-3 text-sm transition',
+    active
+      ? 'text-slate-900 font-semibold dark:text-slate-50'
+      : 'text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-slate-50',
+  ];
 }
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col">
-    <header class="border-b border-slate-200 bg-white">
+    <header class="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
       <div class="tw-container h-14 flex items-center justify-between">
-        <NuxtLink class="font-bold text-slate-900 no-underline" to="/">
+        <NuxtLink class="font-bold text-slate-900 no-underline dark:text-slate-50" to="/">
           {{ siteData?.title || '我的博客' }}
         </NuxtLink>
         <nav class="flex items-center">
           <NuxtLink v-for="it in navItems" :key="it.to" :to="it.to" :class="navLinkClass(it.match(route.path))">
             {{ it.label }}
           </NuxtLink>
+          <ThemeToggleButton class="ml-3" />
           <button
             type="button"
-            class="ml-3 inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            class="ml-3 inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-900/60 dark:hover:text-slate-50"
             aria-label="搜索"
             @click="isSearchOpen = true">
             <svg
@@ -54,7 +60,10 @@ function navLinkClass(active: boolean) {
               <path d="M21 21l-4.3-4.3" />
             </svg>
           </button>
-          <NuxtLink v-if="isDev || isDesktopMode" to="/admin" class="ml-3 text-sm text-slate-500 hover:text-slate-900">
+          <NuxtLink
+            v-if="isDev || isDesktopMode"
+            to="/admin"
+            class="ml-3 text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-50">
             控制台
           </NuxtLink>
         </nav>
@@ -71,9 +80,9 @@ function navLinkClass(active: boolean) {
       </div>
     </main>
 
-    <footer class="border-t border-slate-100 bg-white">
-      <div class="tw-container h-14 flex items-center justify-between text-sm text-slate-500">
-        <span class="font-semibold text-slate-900">{{ siteData?.title || '我的博客' }}</span>
+    <footer class="border-t border-slate-100 bg-white dark:border-slate-800 dark:bg-slate-950">
+      <div class="tw-container h-14 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+        <span class="font-semibold text-slate-900 dark:text-slate-50">{{ siteData?.title || '我的博客' }}</span>
         <SiteUptime v-if="siteData?.since" :since="siteData.since" />
       </div>
     </footer>

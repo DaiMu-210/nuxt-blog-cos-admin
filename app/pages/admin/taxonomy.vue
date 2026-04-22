@@ -32,33 +32,33 @@ const tags = computed(() => {
   <section class="mx-auto max-w-[1080px]">
     <div class="mb-4 flex items-start justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">分类 / 标签</h1>
-        <p class="mt-2 text-sm text-slate-500">基于文章 frontmatter 自动统计。</p>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-50">分类 / 标签</h1>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">基于文章 frontmatter 自动统计。</p>
       </div>
       <button class="tw-btn-ghost" type="button" @click="() => refresh()" :disabled="pending">刷新</button>
     </div>
 
-    <p v-if="error" class="text-sm text-red-700">加载失败：{{ error?.data?.message || error?.message }}</p>
+    <p v-if="error" class="text-sm text-red-700 dark:text-red-300">加载失败：{{ error?.data?.message || error?.message }}</p>
 
     <div v-else class="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <section class="tw-card p-4">
-        <h2 class="mb-3 text-base font-semibold text-slate-900">分类</h2>
-        <div v-if="pending" class="text-sm text-slate-500">加载中...</div>
-        <ul v-else class="divide-y divide-slate-100">
+        <h2 class="mb-3 text-base font-semibold text-slate-900 dark:text-slate-50">分类</h2>
+        <div v-if="pending" class="text-sm text-slate-500 dark:text-slate-400">加载中...</div>
+        <ul v-else class="divide-y divide-slate-100 dark:divide-slate-800">
           <li v-for="c in categories" :key="c.name" class="flex items-center justify-between gap-3 py-3">
-            <span class="font-semibold text-slate-900">{{ c.name }}</span>
-            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{{ c.count }}</span>
+            <span class="font-semibold text-slate-900 dark:text-slate-50">{{ c.name }}</span>
+            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-900/60 dark:text-slate-300">{{ c.count }}</span>
           </li>
         </ul>
       </section>
 
       <section class="tw-card p-4">
-        <h2 class="mb-3 text-base font-semibold text-slate-900">标签</h2>
-        <div v-if="pending" class="text-sm text-slate-500">加载中...</div>
-        <ul v-else class="divide-y divide-slate-100">
+        <h2 class="mb-3 text-base font-semibold text-slate-900 dark:text-slate-50">标签</h2>
+        <div v-if="pending" class="text-sm text-slate-500 dark:text-slate-400">加载中...</div>
+        <ul v-else class="divide-y divide-slate-100 dark:divide-slate-800">
           <li v-for="t in tags" :key="t.name" class="flex items-center justify-between gap-3 py-3">
-            <span class="font-semibold text-slate-900">{{ t.name }}</span>
-            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{{ t.count }}</span>
+            <span class="font-semibold text-slate-900 dark:text-slate-50">{{ t.name }}</span>
+            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-900/60 dark:text-slate-300">{{ t.count }}</span>
           </li>
         </ul>
       </section>

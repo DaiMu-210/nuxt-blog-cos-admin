@@ -9,5 +9,5 @@ await navigateTo(`/admin/posts/edit/${slug.value}`)
 </script>
 
 <template>
-  <div class="text-sm text-slate-500">跳转中...</div>
+  <div class="text-sm text-slate-500 dark:text-slate-400">跳转中...</div>
 </template>

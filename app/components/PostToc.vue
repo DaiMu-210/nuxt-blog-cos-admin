@@ -211,9 +211,9 @@ onBeforeUnmount(() => {
 <template>
   <!-- 桌面左侧面板 -->
   <aside v-if="showDesktopPanel" class="hidden md:block w-64 shrink-0 sticky top-2">
-    <div class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+    <div class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950">
       <div class="flex items-center justify-between gap-2">
-        <div class="text-sm font-semibold text-slate-900">目录</div>
+        <div class="text-sm font-semibold text-slate-900 dark:text-slate-50">目录</div>
         <button class="tw-btn-ghost px-2 py-1 text-xs" type="button" @click="collapsed = true">收起</button>
       </div>
 
@@ -226,15 +226,17 @@ onBeforeUnmount(() => {
                 type="button"
                 class="flex-1 text-left rounded-lg px-2 py-1 text-sm transition"
                 :class="[
-                  it.depth === 3 ? 'pl-6 text-slate-600' : 'pl-2 text-slate-800',
-                  activeId === it.id ? 'bg-slate-900 text-white' : 'hover:bg-slate-50',
+                  it.depth === 3 ? 'pl-6 text-slate-600 dark:text-slate-300' : 'pl-2 text-slate-800 dark:text-slate-200',
+                  activeId === it.id
+                    ? 'bg-slate-900 text-white dark:bg-slate-200 dark:text-slate-900'
+                    : 'hover:bg-slate-50 dark:hover:bg-slate-900/60',
                 ]"
                 @click="scrollTo(it.id)">
                 {{ it.text }}
               </button>
               <button
                 type="button"
-                class="shrink-0 rounded-lg px-2 py-1 text-xs text-slate-500 hover:bg-slate-50 hover:text-slate-900 opacity-0 group-hover:opacity-100 transition"
+                class="shrink-0 rounded-lg px-2 py-1 text-xs text-slate-500 hover:bg-slate-50 hover:text-slate-900 opacity-0 group-hover:opacity-100 transition dark:text-slate-400 dark:hover:bg-slate-900/60 dark:hover:text-slate-50"
                 @click.stop="copyAnchor(it.id)">
                 {{ copiedId === it.id ? '已复制' : '复制' }}
               </button>
@@ -259,9 +261,9 @@ onBeforeUnmount(() => {
     <button type="button" class="absolute inset-0 bg-black/40" @click="overlayOpen = false" />
 
     <div class="absolute left-4 bottom-20 w-[min(360px,calc(100vw-2rem))]">
-      <div class="rounded-2xl border border-slate-200 bg-white shadow-lg overflow-hidden">
-        <div class="flex items-center justify-between gap-2 px-4 py-3 border-b border-slate-100">
-          <div class="text-sm font-semibold text-slate-900">目录</div>
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-lg overflow-hidden dark:border-slate-800 dark:bg-slate-950">
+        <div class="flex items-center justify-between gap-2 px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+          <div class="text-sm font-semibold text-slate-900 dark:text-slate-50">目录</div>
           <div class="flex items-center gap-2">
             <button
               v-if="isMdUp"
@@ -287,15 +289,17 @@ onBeforeUnmount(() => {
                   type="button"
                   class="flex-1 text-left rounded-lg px-2 py-2 text-sm transition"
                   :class="[
-                    it.depth === 3 ? 'pl-6 text-slate-600' : 'pl-2 text-slate-800',
-                    activeId === it.id ? 'bg-slate-900 text-white' : 'hover:bg-slate-50',
+                    it.depth === 3 ? 'pl-6 text-slate-600 dark:text-slate-300' : 'pl-2 text-slate-800 dark:text-slate-200',
+                    activeId === it.id
+                      ? 'bg-slate-900 text-white dark:bg-slate-200 dark:text-slate-900'
+                      : 'hover:bg-slate-50 dark:hover:bg-slate-900/60',
                   ]"
                   @click="scrollTo(it.id)">
                   {{ it.text }}
                 </button>
                 <button
                   type="button"
-                  class="shrink-0 rounded-lg px-2 py-2 text-xs text-slate-500 hover:bg-slate-50 hover:text-slate-900 opacity-0 group-hover:opacity-100 transition"
+                  class="shrink-0 rounded-lg px-2 py-2 text-xs text-slate-500 hover:bg-slate-50 hover:text-slate-900 opacity-0 group-hover:opacity-100 transition dark:text-slate-400 dark:hover:bg-slate-900/60 dark:hover:text-slate-50"
                   @click.stop="copyAnchor(it.id)">
                   {{ copiedId === it.id ? '已复制' : '复制' }}
                 </button>

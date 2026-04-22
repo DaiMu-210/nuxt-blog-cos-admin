@@ -104,13 +104,15 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
           <div class="flex gap-3 items-start">
             <img
               v-if="siteData?.avatar"
-              class="h-[72px] w-[72px] rounded-full border border-slate-200 object-cover"
+              class="h-[72px] w-[72px] rounded-full border border-slate-200 object-cover dark:border-slate-700"
               :src="siteData.avatar"
               alt="avatar" />
             <div class="min-w-0">
-              <h1 class="m-0 text-2xl font-bold text-slate-900">{{ siteData?.name || siteData?.title || '博客' }}</h1>
-              <p v-if="siteData?.bio" class="mt-2 text-slate-700">{{ siteData.bio }}</p>
-              <p v-if="siteData?.intro" class="mt-1 text-slate-500">{{ siteData.intro }}</p>
+              <h1 class="m-0 text-2xl font-bold text-slate-900 dark:text-slate-50">
+                {{ siteData?.name || siteData?.title || '博客' }}
+              </h1>
+              <p v-if="siteData?.bio" class="mt-2 text-slate-700 dark:text-slate-200">{{ siteData.bio }}</p>
+              <p v-if="siteData?.intro" class="mt-1 text-slate-500 dark:text-slate-400">{{ siteData.intro }}</p>
 
               <div v-if="siteData?.social?.length" class="mt-3 flex flex-wrap gap-2">
                 <a
@@ -119,7 +121,7 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
                   :href="s.url"
                   target="_blank"
                   rel="noreferrer"
-                  class="text-sm text-blue-600 hover:underline">
+                  class="text-sm text-blue-600 hover:underline dark:text-blue-400">
                   {{ s.label }}
                 </a>
               </div>
@@ -129,24 +131,24 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
 
         <section v-if="siteData?.home?.showStats" class="tw-card p-5">
           <div class="grid grid-cols-3 gap-2">
-            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center">
-              <div class="text-lg font-bold text-slate-900">{{ stats.posts }}</div>
-              <div class="mt-1 text-xs text-slate-500">文章</div>
+            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center dark:border-slate-800 dark:bg-slate-950">
+              <div class="text-lg font-bold text-slate-900 dark:text-slate-50">{{ stats.posts }}</div>
+              <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">文章</div>
             </div>
-            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center">
-              <div class="text-lg font-bold text-slate-900">{{ stats.categories }}</div>
-              <div class="mt-1 text-xs text-slate-500">分类</div>
+            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center dark:border-slate-800 dark:bg-slate-950">
+              <div class="text-lg font-bold text-slate-900 dark:text-slate-50">{{ stats.categories }}</div>
+              <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">分类</div>
             </div>
-            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center">
-              <div class="text-lg font-bold text-slate-900">{{ stats.tags }}</div>
-              <div class="mt-1 text-xs text-slate-500">标签</div>
+            <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center dark:border-slate-800 dark:bg-slate-950">
+              <div class="text-lg font-bold text-slate-900 dark:text-slate-50">{{ stats.tags }}</div>
+              <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">标签</div>
             </div>
           </div>
         </section>
 
         <section v-if="siteData?.projects?.length" class="tw-card p-5">
           <div class="mb-3 flex items-baseline justify-between gap-2">
-            <h2 class="m-0 text-sm font-semibold text-slate-900">我的项目</h2>
+            <h2 class="m-0 text-sm font-semibold text-slate-900 dark:text-slate-50">我的项目</h2>
           </div>
           <div class="space-y-2">
             <a
@@ -155,30 +157,30 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
               :href="p.url"
               target="_blank"
               rel="noreferrer"
-              class="block rounded-xl border border-slate-200 bg-white p-3 no-underline transition hover:bg-slate-50 hover:border-slate-300">
+              class="block rounded-xl border border-slate-200 bg-white p-3 no-underline transition hover:bg-slate-50 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-900/60 dark:hover:border-slate-700">
               <div class="flex items-center gap-2">
                 <span v-if="p.icon" class="text-base">{{ p.icon }}</span>
-                <span class="text-sm font-semibold text-slate-900">{{ p.name }}</span>
+                <span class="text-sm font-semibold text-slate-900 dark:text-slate-50">{{ p.name }}</span>
               </div>
-              <div v-if="p.desc" class="mt-1 text-xs text-slate-500">{{ p.desc }}</div>
+              <div v-if="p.desc" class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ p.desc }}</div>
             </a>
           </div>
         </section>
 
         <section v-if="sidebarCategories.length" class="tw-card p-5">
           <div class="mb-3 flex items-baseline justify-between gap-2">
-            <h2 class="m-0 text-sm font-semibold text-slate-900">分类</h2>
-            <NuxtLink v-if="hasMoreCategories" class="text-xs text-blue-600 hover:underline" to="/categories">
+            <h2 class="m-0 text-sm font-semibold text-slate-900 dark:text-slate-50">分类</h2>
+            <NuxtLink v-if="hasMoreCategories" class="text-xs text-blue-600 hover:underline dark:text-blue-400" to="/categories">
               更多
             </NuxtLink>
           </div>
           <ul class="space-y-2">
             <li v-for="c in sidebarCategories" :key="c.slug">
               <NuxtLink
-                class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 no-underline transition hover:bg-slate-50 hover:border-slate-300"
+                class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 no-underline transition hover:bg-slate-50 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-900/60 dark:hover:border-slate-700"
                 :to="`/categories/${c.slug}`">
-                <span class="text-sm font-semibold text-slate-900">{{ c.name }}</span>
-                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                <span class="text-sm font-semibold text-slate-900 dark:text-slate-50">{{ c.name }}</span>
+                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-900/60 dark:text-slate-300">
                   {{ c.count }}
                 </span>
               </NuxtLink>
@@ -188,8 +190,8 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
 
         <section v-if="tagCloud.length" class="tw-card p-5">
           <div class="mb-3 flex items-baseline justify-between gap-2">
-            <h2 class="m-0 text-sm font-semibold text-slate-900">词云</h2>
-            <NuxtLink class="text-xs text-blue-600 hover:underline" to="/posts">更多</NuxtLink>
+            <h2 class="m-0 text-sm font-semibold text-slate-900 dark:text-slate-50">词云</h2>
+            <NuxtLink class="text-xs text-blue-600 hover:underline dark:text-blue-400" to="/posts">更多</NuxtLink>
           </div>
           <div class="flex flex-wrap gap-2">
             <NuxtLink
@@ -198,7 +200,7 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
               :to="`/posts?tag=${encodeURIComponent(t.name)}`"
               :title="`${t.name}（${t.count}）`"
               :class="[
-                'inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 leading-none text-slate-900 no-underline hover:bg-slate-50 hover:border-slate-300',
+                'inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 leading-none text-slate-900 no-underline hover:bg-slate-50 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-900/60 dark:hover:border-slate-700',
                 tagLevelClass[t.level],
               ]">
               {{ t.name }}
@@ -209,60 +211,60 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
 
       <div class="flex flex-col gap-6">
         <section v-if="pinnedPosts.length">
-          <h2 class="m-0 text-base font-semibold text-slate-900">置顶</h2>
-          <ul class="mt-2 divide-y divide-slate-100">
+          <h2 class="m-0 text-base font-semibold text-slate-900 dark:text-slate-50">置顶</h2>
+          <ul class="mt-2 divide-y divide-slate-100 dark:divide-slate-800">
             <li v-for="post in pinnedPosts" :key="post.path" class="py-4">
-              <NuxtLink class="text-lg font-semibold text-slate-900 no-underline hover:underline" :to="post.path">
+              <NuxtLink class="text-lg font-semibold text-slate-900 no-underline hover:underline dark:text-slate-50" :to="post.path">
                 {{ post.title || post.path }}
               </NuxtLink>
-              <div class="mt-1 text-sm text-slate-500">
+              <div class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 <span v-if="post.date">{{ post.date }}</span>
                 <span v-if="post.category"> · {{ post.category }}</span>
                 <span v-if="post.tags?.length"> · {{ post.tags.join(', ') }}</span>
               </div>
-              <p v-if="post.description" class="mt-2 text-slate-700">{{ post.description }}</p>
+              <p v-if="post.description" class="mt-2 text-slate-700 dark:text-slate-200">{{ post.description }}</p>
             </li>
           </ul>
         </section>
 
         <section v-if="featuredPosts.length">
-          <h2 class="m-0 text-base font-semibold text-slate-900">精选</h2>
-          <ul class="mt-2 divide-y divide-slate-100">
+          <h2 class="m-0 text-base font-semibold text-slate-900 dark:text-slate-50">精选</h2>
+          <ul class="mt-2 divide-y divide-slate-100 dark:divide-slate-800">
             <li v-for="post in featuredPosts" :key="post.path" class="py-4">
-              <NuxtLink class="text-lg font-semibold text-slate-900 no-underline hover:underline" :to="post.path">
+              <NuxtLink class="text-lg font-semibold text-slate-900 no-underline hover:underline dark:text-slate-50" :to="post.path">
                 {{ post.title || post.path }}
               </NuxtLink>
-              <div class="mt-1 text-sm text-slate-500">
+              <div class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 <span v-if="post.date">{{ post.date }}</span>
                 <span v-if="post.category"> · {{ post.category }}</span>
                 <span v-if="post.tags?.length"> · {{ post.tags.join(', ') }}</span>
               </div>
-              <p v-if="post.description" class="mt-2 text-slate-700">{{ post.description }}</p>
+              <p v-if="post.description" class="mt-2 text-slate-700 dark:text-slate-200">{{ post.description }}</p>
             </li>
           </ul>
         </section>
 
         <section>
           <div class="flex items-baseline justify-between gap-2">
-            <h2 class="m-0 text-base font-semibold text-slate-900">最新文章</h2>
-            <NuxtLink class="text-sm text-blue-600 hover:underline" to="/posts">查看全部</NuxtLink>
+            <h2 class="m-0 text-base font-semibold text-slate-900 dark:text-slate-50">最新文章</h2>
+            <NuxtLink class="text-sm text-blue-600 hover:underline dark:text-blue-400" to="/posts">查看全部</NuxtLink>
           </div>
 
-          <ul v-if="latestPosts.length" class="mt-2 divide-y divide-slate-100">
+          <ul v-if="latestPosts.length" class="mt-2 divide-y divide-slate-100 dark:divide-slate-800">
             <li v-for="post in latestPosts" :key="post.path" class="py-4">
-              <NuxtLink class="text-lg font-semibold text-slate-900 no-underline hover:underline" :to="post.path">
+              <NuxtLink class="text-lg font-semibold text-slate-900 no-underline hover:underline dark:text-slate-50" :to="post.path">
                 {{ post.title || post.path }}
               </NuxtLink>
-              <div class="mt-1 text-sm text-slate-500">
+              <div class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 <span v-if="post.date">{{ post.date }}</span>
                 <span v-if="post.category"> · {{ post.category }}</span>
                 <span v-if="post.tags?.length"> · {{ post.tags.join(', ') }}</span>
               </div>
-              <p v-if="post.description" class="mt-2 text-slate-700">{{ post.description }}</p>
+              <p v-if="post.description" class="mt-2 text-slate-700 dark:text-slate-200">{{ post.description }}</p>
             </li>
           </ul>
 
-          <p v-else class="mt-2 text-slate-500">还没有文章。你可以去控制台新建一篇。</p>
+          <p v-else class="mt-2 text-slate-500 dark:text-slate-400">还没有文章。你可以去控制台新建一篇。</p>
         </section>
       </div>
     </div>

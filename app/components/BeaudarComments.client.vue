@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useTheme } from '~/composables/useTheme';
+
 const props = withDefaults(
   defineProps<{
     repo?: string;
@@ -10,7 +12,7 @@ const props = withDefaults(
   {
     repo: '',
     issueTerm: 'pathname',
-    theme: 'github-light',
+    theme: '',
     label: '',
     branch: '',
   },
@@ -22,26 +24,18 @@ const config = useRuntimeConfig();
 const { data: site } = useNuxtData<any>('site:layout');
 const loadError = ref('');
 const lastCleanedBeaudarParam = ref('');
+const { theme: mode } = useTheme();
 
 let authCleanupTimeoutId: number | null = null;
 let authMessageHandler: ((event: MessageEvent) => void) | null = null;
 
 const siteBeaudarRepo = computed(() => String(site.value?.comments?.beaudarRepo || site.value?.beaudarRepo || ''));
-const siteBeaudarTheme = computed(() =>
-  String(site.value?.comments?.beaudarTheme || site.value?.beaudarTheme || 'github-light'),
-);
 
 const resolvedRepo = computed(
   () => props.repo || siteBeaudarRepo.value || (config.public as any).beaudarRepo || config.public.utterancesRepo || '',
 );
-const resolvedTheme = computed(
-  () =>
-    props.theme ||
-    siteBeaudarTheme.value ||
-    (config.public as any).beaudarTheme ||
-    config.public.utterancesTheme ||
-    'github-light',
-);
+const autoTheme = computed(() => (mode.value === 'dark' ? 'github-dark' : 'github-light'));
+const resolvedTheme = computed(() => props.theme || autoTheme.value);
 const resolvedIssueTerm = computed(() => props.issueTerm || 'pathname');
 const resolvedBranch = computed(() =>
   String(
@@ -171,9 +165,9 @@ function setupAuthCleanup() {
 </script>
 
 <template>
-  <section class="mt-8 border-t border-slate-100 pt-6">
-    <h2 class="m-0 text-lg font-semibold text-slate-900">评论</h2>
-    <p v-if="!resolvedRepo" class="mt-2 text-sm text-slate-500">
+  <section class="mt-8 border-t border-slate-100 pt-6 dark:border-slate-800">
+    <h2 class="m-0 text-lg font-semibold text-slate-900 dark:text-slate-50">评论</h2>
+    <p v-if="!resolvedRepo" class="mt-2 text-sm text-slate-500 dark:text-slate-400">
       尚未配置评论仓库，请设置 <code>NUXT_PUBLIC_BEAUDAR_REPO</code>。
     </p>
     <p v-else-if="loadError" class="mt-2 text-sm text-rose-600">

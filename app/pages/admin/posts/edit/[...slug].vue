@@ -78,7 +78,7 @@ async function onBack() {
     <div class="mb-4 flex items-center justify-between gap-3">
       <div class="flex items-center gap-2 min-w-0">
         <button class="tw-btn-ghost px-2 py-1 text-xs" type="button" @click="onBack">返回</button>
-        <div class="truncate font-mono text-xs text-slate-500">{{ slug }}</div>
+        <div class="truncate font-mono text-xs text-slate-500 dark:text-slate-400">{{ slug }}</div>
       </div>
       <div class="flex items-center gap-2 shrink-0">
         <NuxtLink class="tw-btn-ghost px-2 py-1 text-xs" :to="`/posts/${slug}`" target="_blank">预览</NuxtLink>
@@ -88,43 +88,45 @@ async function onBack() {
       </div>
     </div>
 
-    <p v-if="error" class="text-sm text-red-700">加载失败：{{ error?.data?.message || error?.message }}</p>
+    <p v-if="error" class="text-sm text-red-700 dark:text-red-300">
+      加载失败：{{ error?.data?.message || error?.message }}
+    </p>
 
     <div v-else class="grid gap-4 min-[1024px]:grid-cols-[360px_1fr] items-stretch flex-1 min-h-0 h-full">
       <div class="tw-card p-4 min-h-0 h-full flex flex-col">
         <div class="flex flex-col gap-4 flex-1 min-h-0">
           <div>
-            <label class="block text-xs text-slate-500 mb-2">标题</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">标题</label>
             <input v-model="meta.title" class="tw-input" type="text" placeholder="文章标题" />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs text-slate-500 mb-2">日期</label>
+              <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">日期</label>
               <input v-model="meta.date" class="tw-input" type="date" />
             </div>
             <div>
-              <label class="block text-xs text-slate-500 mb-2">草稿</label>
+              <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">草稿</label>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input v-model="meta.draft" type="checkbox" class="sr-only peer" />
                 <span
-                  class="h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-900 transition after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5" />
+                  class="h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-900 transition after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5 dark:bg-slate-800 dark:peer-checked:bg-slate-200 dark:after:bg-slate-950" />
               </label>
             </div>
           </div>
 
           <div>
-            <label class="block text-xs text-slate-500 mb-2">分类</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">分类</label>
             <input v-model="meta.category" class="tw-input" type="text" placeholder="例如：技术 / 随笔" />
           </div>
 
           <div>
-            <label class="block text-xs text-slate-500 mb-2">标签（逗号分隔）</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">标签（逗号分隔）</label>
             <input v-model="tagsInput" class="tw-input" type="text" placeholder="nuxt, blog" />
           </div>
 
           <div class="flex flex-col flex-1 min-h-0">
-            <label class="block text-xs text-slate-500 mb-2">描述</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">描述</label>
             <textarea
               v-model="meta.description"
               class="tw-textarea flex-1 min-h-0 resize-none"
@@ -134,7 +136,7 @@ async function onBack() {
         </div>
       </div>
 
-      <div class="tw-card overflow-hidden bg-white min-h-0 h-full">
+      <div class="tw-card overflow-hidden min-h-0 h-full">
         <AdminEditor v-model="body" />
       </div>
     </div>

@@ -42,17 +42,17 @@ const viewMeta = computed(() => {
       <PostToc :links="tocLinks" :content-el="contentRef" :refresh-key="tocRefreshKey" />
 
       <div class="min-w-0 flex-1">
-        <header class="mb-5 border-b border-slate-100 pb-3">
-          <h1 class="m-0 text-3xl font-bold text-slate-900">{{ viewMeta?.title }}</h1>
-          <div class="mt-2 text-sm text-slate-500">
+        <header class="mb-5 border-b border-slate-100 pb-3 dark:border-slate-800">
+          <h1 class="m-0 text-3xl font-bold text-slate-900 dark:text-slate-50">{{ viewMeta?.title }}</h1>
+          <div class="mt-2 text-sm text-slate-500 dark:text-slate-400">
             <span v-if="viewMeta?.date">{{ viewMeta?.date }}</span>
             <span v-if="viewMeta?.category"> · {{ viewMeta?.category }}</span>
             <span v-if="viewMeta?.tags?.length"> · {{ viewMeta?.tags.join(', ') }}</span>
           </div>
-          <p v-if="viewMeta?.description" class="mt-3 text-slate-700">{{ viewMeta?.description }}</p>
+          <p v-if="viewMeta?.description" class="mt-3 text-slate-700 dark:text-slate-200">{{ viewMeta?.description }}</p>
         </header>
 
-        <div ref="contentRef" class="prose prose-slate max-w-none">
+        <div ref="contentRef" class="prose prose-slate dark:prose-invert max-w-none">
           <MarkdownViewer v-if="isDesktopProd" :value="(post as any)?.body || ''" @rendered="tocRefreshKey++" />
           <ContentRenderer v-else :value="post as any" />
         </div>

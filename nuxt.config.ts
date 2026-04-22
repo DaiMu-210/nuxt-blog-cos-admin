@@ -4,6 +4,15 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
+    head: {
+      script: [
+        {
+          id: 'theme-init',
+          innerHTML:
+            "(function(){try{var k='nb-theme';var t=localStorage.getItem(k);var m=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;var d=t==='dark'||(!t&&m);var r=document.documentElement;r.classList.toggle('dark',d);r.style.colorScheme=d?'dark':'light';}catch(e){}})();",
+        },
+      ],
+    },
   },
 
   modules: ['@nuxt/content', '@nuxtjs/tailwindcss'],

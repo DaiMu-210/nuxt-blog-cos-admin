@@ -35,10 +35,10 @@ function submit() {
   <Teleport to="body">
     <Transition name="fade">
       <div v-if="open" class="fixed inset-0 z-50 flex items-start justify-center px-4 py-16">
-        <div class="absolute inset-0 bg-slate-900/30" @click="close" />
+        <div class="absolute inset-0 bg-slate-900/30 dark:bg-black/60" @click="close" />
         <div class="tw-card relative w-full max-w-lg p-4 shadow-lg">
           <div class="flex items-center justify-between gap-3">
-            <div class="text-base font-semibold text-slate-900">{{ title }}</div>
+            <div class="text-base font-semibold text-slate-900 dark:text-slate-50">{{ title }}</div>
             <button class="tw-btn-ghost px-2 py-1 text-xs" type="button" :disabled="loading" @click="close">关闭</button>
           </div>
           <div class="mt-3">
@@ -66,4 +66,3 @@ function submit() {
   opacity: 0;
 }
 </style>
-

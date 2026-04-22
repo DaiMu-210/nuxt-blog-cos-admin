@@ -173,8 +173,8 @@ async function changePassword() {
   <section class="mx-auto max-w-[1080px]">
     <div class="mb-4 flex items-start justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">用户设置</h1>
-        <p class="mt-2 text-sm text-slate-500">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-50">用户设置</h1>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
           这些配置写入本地私有配置文件（项目 .data/ 或桌面应用用户数据目录），不会被静态导出。
         </p>
       </div>
@@ -186,35 +186,35 @@ async function changePassword() {
       </div>
     </div>
 
-    <p v-if="error" class="text-sm text-red-700">加载失败：{{ error?.data?.message || error?.message }}</p>
+    <p v-if="error" class="text-sm text-red-700 dark:text-red-300">加载失败：{{ error?.data?.message || error?.message }}</p>
 
     <div v-else class="space-y-4">
       <section class="tw-card p-4">
-        <h2 class="text-base font-semibold text-slate-900">会话 TTL</h2>
-        <p class="mt-1 text-sm text-slate-500">单位：秒。保存后会刷新当前登录态的 cookie。</p>
+        <h2 class="text-base font-semibold text-slate-900 dark:text-slate-50">会话 TTL</h2>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">单位：秒。保存后会刷新当前登录态的 cookie。</p>
         <div class="mt-3 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-3 items-start">
           <div>
-            <label class="block text-xs text-slate-500 mb-2">ttlSeconds</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">ttlSeconds</label>
             <input v-model.number="ttlSeconds" class="tw-input" type="number" min="1" step="1" />
           </div>
-          <div class="text-sm text-slate-500">常用：1 天=86400；1 周=604800</div>
+          <div class="text-sm text-slate-500 dark:text-slate-400">常用：1 天=86400；1 周=604800</div>
         </div>
       </section>
 
       <section class="tw-card p-4">
-        <h2 class="text-base font-semibold text-slate-900">COS 配置</h2>
-        <p class="mt-1 text-sm text-slate-500">secret 不会回显；如需更新，请重新输入并保存。</p>
+        <h2 class="text-base font-semibold text-slate-900 dark:text-slate-50">COS 配置</h2>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">secret 不会回显；如需更新，请重新输入并保存。</p>
         <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs text-slate-500 mb-2">bucket</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">bucket</label>
             <input v-model="cosBucket" class="tw-input" type="text" placeholder="例如：my-bucket-1250000000" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">region</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">region</label>
             <input v-model="cosRegion" class="tw-input" type="text" placeholder="例如：ap-guangzhou" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">secretId</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">secretId</label>
             <input
               v-model="cosSecretId"
               class="tw-input"
@@ -223,7 +223,7 @@ async function changePassword() {
               autocomplete="off" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">secretKey</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">secretKey</label>
             <input
               v-model="cosSecretKey"
               class="tw-input"
@@ -235,19 +235,19 @@ async function changePassword() {
       </section>
 
       <section class="tw-card p-4">
-        <h2 class="text-base font-semibold text-slate-900">修改密码</h2>
+        <h2 class="text-base font-semibold text-slate-900 dark:text-slate-50">修改密码</h2>
         <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs text-slate-500 mb-2">旧密码</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">旧密码</label>
             <input v-model="oldPassword" class="tw-input" type="password" autocomplete="current-password" />
           </div>
           <div />
           <div>
-            <label class="block text-xs text-slate-500 mb-2">新密码</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">新密码</label>
             <input v-model="newPassword" class="tw-input" type="password" autocomplete="new-password" />
           </div>
           <div>
-            <label class="block text-xs text-slate-500 mb-2">确认新密码</label>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">确认新密码</label>
             <input v-model="confirmPassword" class="tw-input" type="password" autocomplete="new-password" />
           </div>
         </div>
@@ -255,7 +255,7 @@ async function changePassword() {
           <div
             v-if="passwordMsg"
             class="text-sm"
-            :class="passwordMsg.includes('失败') ? 'text-red-700' : 'text-emerald-700'">
+            :class="passwordMsg.includes('失败') ? 'text-red-700 dark:text-red-300' : 'text-emerald-700 dark:text-emerald-300'">
             {{ passwordMsg }}
           </div>
           <div class="ml-auto">
@@ -269,8 +269,8 @@ async function changePassword() {
       <section class="tw-card p-4">
         <div class="flex items-start justify-between gap-3">
           <div>
-            <h2 class="text-base font-semibold text-slate-900">COS 一键发布</h2>
-            <p class="mt-1 text-sm text-slate-500">
+            <h2 class="text-base font-semibold text-slate-900 dark:text-slate-50">COS 一键发布</h2>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
               仅本地/桌面模式可用：服务端执行 generate:dist + coscli sync（使用上方 COS 配置）。
             </p>
           </div>
@@ -288,7 +288,7 @@ async function changePassword() {
           </div>
         </div>
 
-        <div class="mt-3 text-sm text-slate-700">
+        <div class="mt-3 text-sm text-slate-700 dark:text-slate-200">
           <div v-if="publishJob">
             <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
               <div>
@@ -303,22 +303,22 @@ async function changePassword() {
             </div>
             <pre
               v-if="publishJob.logs?.length"
-              class="mt-3 max-h-[320px] overflow-auto rounded-xl border border-slate-200 bg-slate-900 text-slate-100 p-3 text-xs leading-relaxed whitespace-pre-wrap"
+              class="mt-3 max-h-[320px] overflow-auto rounded-xl border border-slate-200 bg-slate-900 text-slate-100 p-3 text-xs leading-relaxed whitespace-pre-wrap dark:border-slate-800"
               >{{ publishJob.logs.join('\n') }}</pre
             >
           </div>
-          <div v-else class="text-slate-500">暂无发布任务</div>
+          <div v-else class="text-slate-500 dark:text-slate-400">暂无发布任务</div>
         </div>
 
         <p
           v-if="publishMsg"
           class="mt-3 text-sm"
-          :class="publishMsg.includes('失败') ? 'text-red-700' : 'text-slate-700'">
+          :class="publishMsg.includes('失败') ? 'text-red-700 dark:text-red-300' : 'text-slate-700 dark:text-slate-200'">
           {{ publishMsg }}
         </p>
       </section>
 
-      <p v-if="configMsg" class="text-sm" :class="configMsg.includes('失败') ? 'text-red-700' : 'text-emerald-700'">
+      <p v-if="configMsg" class="text-sm" :class="configMsg.includes('失败') ? 'text-red-700 dark:text-red-300' : 'text-emerald-700 dark:text-emerald-300'">
         {{ configMsg }}
       </p>
     </div>

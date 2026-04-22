@@ -33,22 +33,22 @@ async function submit() {
 <template>
   <section class="mx-auto flex min-h-[70vh] max-w-md items-center px-4">
     <div class="tw-card w-full p-6">
-      <h1 class="text-xl font-bold text-slate-900">后台登录</h1>
-      <p class="mt-2 text-sm text-slate-500">请输入初始化时设置的管理员密码。</p>
+      <h1 class="text-xl font-bold text-slate-900 dark:text-slate-50">后台登录</h1>
+      <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">请输入初始化时设置的管理员密码。</p>
 
       <form class="mt-5 space-y-4" @submit.prevent="submit">
         <div>
-          <label class="mb-1 block text-sm text-slate-600">管理员密码</label>
+          <label class="mb-1 block text-sm text-slate-600 dark:text-slate-300">管理员密码</label>
           <input
             v-model="password"
             type="password"
-            class="w-full rounded-xl border border-slate-300 px-3 py-2 outline-none focus:border-slate-400"
+            class="tw-input"
             placeholder="请输入管理员密码"
             autocomplete="current-password"
             required />
         </div>
 
-        <div v-if="errMsg" class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div v-if="errMsg" class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-200">
           {{ errMsg }}
         </div>
 

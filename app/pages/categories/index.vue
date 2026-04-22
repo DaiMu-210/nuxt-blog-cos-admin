@@ -32,22 +32,22 @@ function toBase64Url(str: string) {
 
 <template>
   <section>
-    <h1 class="text-2xl font-bold text-slate-900">分类</h1>
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-50">分类</h1>
 
-    <ul v-if="categories.length" class="mt-4 divide-y divide-slate-100">
+    <ul v-if="categories.length" class="mt-4 divide-y divide-slate-100 dark:divide-slate-800">
       <li v-for="c in categories" :key="c.slug" class="flex items-center justify-between py-3">
         <NuxtLink
-          class="font-semibold text-slate-900 no-underline hover:underline"
+          class="font-semibold text-slate-900 no-underline hover:underline dark:text-slate-50"
           :to="`/categories/${c.slug}`"
         >
           {{ c.name }}
         </NuxtLink>
-        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-900/60 dark:text-slate-300">
           {{ c.count }}
         </span>
       </li>
     </ul>
 
-    <p v-else class="mt-3 text-slate-500">还没有文章。</p>
+    <p v-else class="mt-3 text-slate-500 dark:text-slate-400">还没有文章。</p>
   </section>
 </template>

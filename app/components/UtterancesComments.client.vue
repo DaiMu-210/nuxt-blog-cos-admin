@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useTheme } from '~/composables/useTheme';
+
 const props = withDefaults(
   defineProps<{
     repo?: string;
@@ -9,7 +11,7 @@ const props = withDefaults(
   {
     repo: '',
     issueTerm: 'pathname',
-    theme: 'github-light',
+    theme: '',
     label: 'comment',
   },
 );
@@ -18,9 +20,11 @@ const hostRef = ref<HTMLElement | null>(null);
 const route = useRoute();
 const config = useRuntimeConfig();
 const loadError = ref('');
+const { theme: mode } = useTheme();
 
 const resolvedRepo = computed(() => props.repo || config.public.utterancesRepo || '');
-const resolvedTheme = computed(() => props.theme || config.public.utterancesTheme || 'github-light');
+const autoTheme = computed(() => (mode.value === 'dark' ? 'github-dark' : 'github-light'));
+const resolvedTheme = computed(() => props.theme || autoTheme.value);
 const resolvedIssueTerm = computed(() => props.issueTerm || 'pathname');
 
 const instanceKey = computed(() =>
@@ -57,9 +61,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="mt-8 border-t border-slate-100 pt-6">
-    <h2 class="m-0 text-lg font-semibold text-slate-900">评论</h2>
-    <p v-if="!resolvedRepo" class="mt-2 text-sm text-slate-500">
+  <section class="mt-8 border-t border-slate-100 pt-6 dark:border-slate-800">
+    <h2 class="m-0 text-lg font-semibold text-slate-900 dark:text-slate-50">评论</h2>
+    <p v-if="!resolvedRepo" class="mt-2 text-sm text-slate-500 dark:text-slate-400">
       尚未配置评论仓库，请设置 <code>NUXT_PUBLIC_UTTERANCES_REPO</code>。
     </p>
     <p v-else-if="loadError" class="mt-2 text-sm text-rose-600">

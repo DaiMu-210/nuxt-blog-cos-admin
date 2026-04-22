@@ -1,3 +1,4 @@
+@config "../../../tailwind.config.js";
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
@@ -9,7 +10,7 @@
   }
   body {
     margin: 0;
-    @apply bg-white text-slate-900;
+    @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100;
   }
 }
 
@@ -20,28 +21,28 @@
   }
 
   .tw-card {
-    @apply rounded-2xl border border-slate-200 bg-white;
+    @apply rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/40;
   }
 
   .tw-btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition disabled:opacity-60 disabled:cursor-not-allowed border-slate-900 bg-slate-900 text-white hover:bg-slate-800;
+    @apply inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition disabled:opacity-60 disabled:cursor-not-allowed border-slate-900 bg-slate-900 text-white hover:bg-slate-800 dark:border-slate-200 dark:bg-slate-200 dark:text-slate-900 dark:hover:bg-white;
   }
   .tw-btn-ghost {
-    @apply inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition disabled:opacity-60 disabled:cursor-not-allowed border-slate-200 bg-white text-slate-900 hover:bg-slate-50;
+    @apply inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition disabled:opacity-60 disabled:cursor-not-allowed border-slate-200 bg-white text-slate-900 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-900/60;
   }
   .tw-btn-danger {
-    @apply inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition disabled:opacity-60 disabled:cursor-not-allowed border-red-200 bg-white text-red-700 hover:bg-red-50;
+    @apply inline-flex items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium transition disabled:opacity-60 disabled:cursor-not-allowed border-red-200 bg-white text-red-700 hover:bg-red-50 dark:border-red-900/60 dark:bg-slate-950 dark:text-red-300 dark:hover:bg-red-950/40;
   }
 
   .tw-input {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400;
+    @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-slate-500;
   }
   .tw-textarea {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400;
+    @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-slate-500;
   }
 
   .tw-link {
-    @apply text-blue-600 hover:underline;
+    @apply text-blue-600 hover:underline dark:text-blue-400;
   }
 }
 
@@ -52,7 +53,7 @@
   }
 
   .prose :not(pre) > code {
-    @apply rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-medium text-slate-900;
+    @apply rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-medium text-slate-900 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-100;
   }
 
   .prose pre,
@@ -159,7 +160,7 @@
     @apply relative;
   }
   pre.tw-codeblock .tw-codecopy {
-    @apply absolute right-3 top-3 z-10 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50;
+    @apply absolute right-3 top-3 z-10 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-900/60;
   }
   .hljs-comment,
   .hljs-quote {
@@ -196,41 +197,39 @@
     font-style: italic;
   }
 
-  @media (prefers-color-scheme: dark) {
-    pre code.hljs {
-      background: #0b1220;
-      color: #e2e8f0;
-    }
-    .hljs-comment,
-    .hljs-quote {
-      color: #94a3b8;
-    }
-    .hljs-keyword,
-    .hljs-selector-tag,
-    .hljs-subst {
-      color: #c4b5fd;
-    }
-    .hljs-string,
-    .hljs-title,
-    .hljs-section,
-    .hljs-built_in,
-    .hljs-bullet {
-      color: #5eead4;
-    }
-    .hljs-number,
-    .hljs-literal,
-    .hljs-symbol,
-    .hljs-attribute {
-      color: #fdba74;
-    }
-    .hljs-function,
-    .hljs-title.function_ {
-      color: #93c5fd;
-    }
-    .hljs-meta,
-    .hljs-doctag,
-    .hljs-strong {
-      color: #e2e8f0;
-    }
+  .dark pre code.hljs {
+    background: #0b1220;
+    color: #e2e8f0;
+  }
+  .dark .hljs-comment,
+  .dark .hljs-quote {
+    color: #94a3b8;
+  }
+  .dark .hljs-keyword,
+  .dark .hljs-selector-tag,
+  .dark .hljs-subst {
+    color: #c4b5fd;
+  }
+  .dark .hljs-string,
+  .dark .hljs-title,
+  .dark .hljs-section,
+  .dark .hljs-built_in,
+  .dark .hljs-bullet {
+    color: #5eead4;
+  }
+  .dark .hljs-number,
+  .dark .hljs-literal,
+  .dark .hljs-symbol,
+  .dark .hljs-attribute {
+    color: #fdba74;
+  }
+  .dark .hljs-function,
+  .dark .hljs-title.function_ {
+    color: #93c5fd;
+  }
+  .dark .hljs-meta,
+  .dark .hljs-doctag,
+  .dark .hljs-strong {
+    color: #e2e8f0;
   }
 }

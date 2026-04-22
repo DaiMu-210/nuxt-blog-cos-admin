@@ -6,37 +6,37 @@ const linksData = computed(() => links.value ?? ({ groups: [] } as any));
 
 <template>
   <section>
-    <h1 class="text-2xl font-bold text-slate-900">友链</h1>
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-50">友链</h1>
 
     <div v-if="linksData?.groups?.length" class="mt-4 space-y-6">
       <section v-for="g in linksData.groups" :key="g.name">
-        <h2 class="mb-3 text-base font-semibold text-slate-900">{{ g.name }}</h2>
+        <h2 class="mb-3 text-base font-semibold text-slate-900 dark:text-slate-50">{{ g.name }}</h2>
         <ul class="space-y-3">
           <li
             v-for="item in g.items"
             :key="item.url"
-            class="flex gap-3 rounded-xl border border-slate-100 bg-white p-3">
+            class="flex gap-3 rounded-xl border border-slate-100 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
             <img
               v-if="item.avatar"
-              class="h-10 w-10 rounded-full border border-slate-200 object-cover"
+              class="h-10 w-10 rounded-full border border-slate-200 object-cover dark:border-slate-700"
               :src="item.avatar"
               alt="avatar" />
             <div class="min-w-0">
               <a
-                class="font-semibold text-slate-900 no-underline hover:underline"
+                class="font-semibold text-slate-900 no-underline hover:underline dark:text-slate-50"
                 :href="item.url"
                 target="_blank"
                 rel="noreferrer">
                 {{ item.title }}
               </a>
-              <div v-if="item.desc" class="mt-1 text-slate-700">{{ item.desc }}</div>
-              <div class="mt-1 text-xs text-slate-500">{{ item.url }}</div>
+              <div v-if="item.desc" class="mt-1 text-slate-700 dark:text-slate-200">{{ item.desc }}</div>
+              <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ item.url }}</div>
             </div>
           </li>
         </ul>
       </section>
     </div>
 
-    <p v-else class="mt-3 text-slate-500">还没有友链。你可以在控制台里添加。</p>
+    <p v-else class="mt-3 text-slate-500 dark:text-slate-400">还没有友链。你可以在控制台里添加。</p>
   </section>
 </template>
