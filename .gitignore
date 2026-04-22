@@ -6,6 +6,7 @@
 .cache
 .trae
 .vercel
+.data-desktop-test
 dist
 dist-electron
 
