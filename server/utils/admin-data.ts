@@ -1,10 +1,42 @@
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { createError } from 'h3';
 import { assertAdminEnabled } from './admin-content';
 
-function getContentPath(relPath: string) {
-  return resolve(process.cwd(), 'content', relPath);
+function getDesktopDataDir() {
+  const v = String(process.env.NUXT_DESKTOP_DATA_DIR || '').trim();
+  return v ? resolve(v) : '';
+}
+
+function getBundledContentDir() {
+  return resolve(process.cwd(), 'content');
+}
+
+function getDesktopContentDir() {
+  const base = getDesktopDataDir();
+  return base ? resolve(base, 'content') : '';
+}
+
+async function pathExists(p: string) {
+  try {
+    await stat(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function getReadContentPath(relPath: string) {
+  const desktopDir = getDesktopContentDir();
+  const desktopPath = desktopDir ? resolve(desktopDir, relPath) : '';
+  if (desktopPath && (await pathExists(desktopPath))) return desktopPath;
+  return resolve(getBundledContentDir(), relPath);
+}
+
+function getWriteContentPath(relPath: string) {
+  const desktopDir = getDesktopContentDir();
+  if (desktopDir) return resolve(desktopDir, relPath);
+  return resolve(getBundledContentDir(), relPath);
 }
 
 export type SiteData = {
@@ -44,7 +76,7 @@ export type LinksData = {
 
 export async function readSite(): Promise<SiteData> {
   assertAdminEnabled();
-  const p = getContentPath('site.json');
+  const p = await getReadContentPath('site.json');
   try {
     const raw = await readFile(p, 'utf8');
     return JSON.parse(raw) as SiteData;
@@ -59,7 +91,7 @@ export async function readSite(): Promise<SiteData> {
 export async function writeSite(data: SiteData) {
   assertAdminEnabled();
   if (!data?.title) throw createError({ statusCode: 400, statusMessage: 'site.title 不能为空' });
-  const p = getContentPath('site.json');
+  const p = getWriteContentPath('site.json');
   await mkdir(dirname(p), { recursive: true });
   await writeFile(p, JSON.stringify(data, null, 2) + '\n', 'utf8');
   return { ok: true };
@@ -67,7 +99,7 @@ export async function writeSite(data: SiteData) {
 
 export async function readLinks(): Promise<LinksData> {
   assertAdminEnabled();
-  const p = getContentPath('links.json');
+  const p = await getReadContentPath('links.json');
   try {
     const raw = await readFile(p, 'utf8');
     return JSON.parse(raw) as LinksData;
@@ -79,7 +111,7 @@ export async function readLinks(): Promise<LinksData> {
 
 export async function writeLinks(data: LinksData) {
   assertAdminEnabled();
-  const p = getContentPath('links.json');
+  const p = getWriteContentPath('links.json');
   await mkdir(dirname(p), { recursive: true });
   await writeFile(p, JSON.stringify(data, null, 2) + '\n', 'utf8');
   return { ok: true };

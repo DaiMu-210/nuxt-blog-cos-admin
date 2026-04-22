@@ -1,7 +1,6 @@
 <script setup lang="ts">
-const { data: posts } = await useAsyncData('posts:categories', () =>
-  queryCollection('posts').order('date', 'DESC').all()
-)
+import { usePostsList } from '~/composables/useDesktopContent';
+const { data: posts } = await usePostsList('posts:categories')
 
 const publishedPosts = computed(() =>
   (posts.value ?? []).filter((p: any) => !p.draft)

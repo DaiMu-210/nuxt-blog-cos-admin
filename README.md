@@ -116,7 +116,7 @@ pnpm dev
 - 评论仓库（Beaudar，owner/repo）
 - 评论主题
 
-  3)（可选）也可以用环境变量作为兜底（适合 CI/CD 构建阶段注入）：
+  3\)（可选）也可以用环境变量作为兜底（适合 CI/CD 构建阶段注入）：
 
 ```powershell
 $env:NUXT_PUBLIC_BEAUDAR_REPO="owner/repo"
@@ -200,20 +200,3 @@ coscli 获取策略：
 - 若你本机已安装 `coscli` 且在 PATH 中，脚本会直接使用。
 - 若未安装，可设置 `COSCLI_PATH` 指向本机的 coscli 可执行文件。
 - 若以上都没有，脚本会尝试自动下载 coscli；如遇到网络/证书/文件名变化问题，可用 `COSCLI_DOWNLOAD_URL` 指定下载地址。
-
-### CNB.cool 自动部署到 COS
-
-仓库根目录已包含 `.cnb.yml`，你需要在 CNB 的变量/密钥中配置以下环境变量：
-
-- `COS_BUCKET`：例如 `examplebucket-1250000000`
-- `COS_REGION`：例如 `ap-guangzhou`
-- `COS_SECRET_ID`
-- `COS_SECRET_KEY`
-
-流水线会执行：
-
-1. `pnpm install`
-2. `pnpm run generate:dist`（生成 `dist/`）
-3. 使用 COSCLI 将 `dist/` 同步到 `cos://${COS_BUCKET}/`（带 `--delete`）
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

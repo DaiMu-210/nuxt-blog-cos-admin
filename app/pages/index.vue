@@ -1,102 +1,99 @@
 <script setup lang="ts">
-const { data: site } = await useAsyncData('site', () => queryCollection('site').first())
-
-const { data: posts } = await useAsyncData('posts', () =>
-  queryCollection('posts').order('date', 'DESC').all()
-)
+import { usePostsList, useSiteData } from '~/composables/useDesktopContent';
+const { data: site } = await useSiteData('site');
+const { data: posts } = await usePostsList('posts');
+const siteData = computed(() => (site.value ?? {}) as any);
 
 onMounted(() => {
-  refreshNuxtData('site')
-})
+  refreshNuxtData('site');
+});
 
-const publishedPosts = computed(() =>
-  (posts.value ?? []).filter((p: any) => !p.draft)
-)
+const publishedPosts = computed(() => (posts.value ?? []).filter((p: any) => !p.draft));
 
 const postsBySlug = computed(() => {
-  const map = new Map<string, any>()
+  const map = new Map<string, any>();
   for (const p of publishedPosts.value) {
-    const slug = String(p.path || '').replace(/^\/posts\//, '')
-    map.set(slug, p)
+    const slug = String(p.path || '').replace(/^\/posts\//, '');
+    map.set(slug, p);
   }
-  return map
-})
+  return map;
+});
 
 const pinnedPosts = computed(() => {
-  const slugs: string[] = site.value?.home?.pinnedSlugs ?? []
-  return slugs.map((s) => postsBySlug.value.get(s)).filter(Boolean)
-})
+  const slugs: string[] = siteData.value?.home?.pinnedSlugs ?? [];
+  return slugs.map((s) => postsBySlug.value.get(s)).filter(Boolean);
+});
 
 const featuredPosts = computed(() => {
-  const slugs: string[] = site.value?.home?.featuredSlugs ?? []
-  return slugs.map((s) => postsBySlug.value.get(s)).filter(Boolean)
-})
+  const slugs: string[] = siteData.value?.home?.featuredSlugs ?? [];
+  return slugs.map((s) => postsBySlug.value.get(s)).filter(Boolean);
+});
 
-const latestCount = computed(() => Number(site.value?.home?.latestCount ?? 10))
-const latestPosts = computed(() => publishedPosts.value.slice(0, latestCount.value))
+const latestCount = computed(() => Number(siteData.value?.home?.latestCount ?? 10));
+const latestPosts = computed(() => publishedPosts.value.slice(0, latestCount.value));
 
 const stats = computed(() => {
-  const categories = new Set<string>()
-  const tags = new Set<string>()
+  const categories = new Set<string>();
+  const tags = new Set<string>();
   for (const p of publishedPosts.value) {
-    if (p.category) categories.add(String(p.category))
-    for (const t of p.tags ?? []) tags.add(String(t))
+    if (p.category) categories.add(String(p.category));
+    for (const t of p.tags ?? []) tags.add(String(t));
   }
   return {
     posts: publishedPosts.value.length,
     categories: categories.size,
-    tags: tags.size
-  }
-})
+    tags: tags.size,
+  };
+});
 
 function toBase64Url(str: string) {
-  const g: any = globalThis as any
+  const g: any = globalThis as any;
   if (typeof g.Buffer !== 'undefined') {
-    return g.Buffer.from(str, 'utf8').toString('base64url')
+    return g.Buffer.from(str, 'utf8').toString('base64url');
   }
-  const b64 = btoa(unescape(encodeURIComponent(str)))
-  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+  const b64 = btoa(unescape(encodeURIComponent(str)));
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
 }
 
 const categories = computed(() => {
-  const map = new Map<string, number>()
+  const map = new Map<string, number>();
   for (const p of publishedPosts.value) {
-    const c = p.category ? String(p.category) : '未分类'
-    map.set(c, (map.get(c) ?? 0) + 1)
+    const c = p.category ? String(p.category) : '未分类';
+    map.set(c, (map.get(c) ?? 0) + 1);
   }
   return Array.from(map.entries())
     .map(([name, count]) => ({ name, count, slug: toBase64Url(name) }))
-    .sort((a, b) => b.count - a.count)
-})
+    .sort((a, b) => b.count - a.count);
+});
 
-const sidebarCategories = computed(() => categories.value.slice(0, 8))
-const hasMoreCategories = computed(() => categories.value.length > sidebarCategories.value.length)
+const sidebarCategories = computed(() => categories.value.slice(0, 8));
+const hasMoreCategories = computed(() => categories.value.length > sidebarCategories.value.length);
 
 const tagCloud = computed(() => {
-  const map = new Map<string, number>()
+  const map = new Map<string, number>();
   for (const p of publishedPosts.value) {
     for (const t of p.tags ?? []) {
-      const key = String(t)
-      map.set(key, (map.get(key) ?? 0) + 1)
+      const key = String(t);
+      map.set(key, (map.get(key) ?? 0) + 1);
     }
   }
   const list = Array.from(map.entries())
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count)
-    .slice(0, 30)
+    .slice(0, 30);
 
-  const counts = list.map((x) => x.count)
-  const min = Math.min(...counts, 1)
-  const max = Math.max(...counts, 1)
+  const counts = list.map((x) => x.count);
+  const min = Math.min(...counts, 1);
+  const max = Math.max(...counts, 1);
 
   return list.map((x) => {
-    const ratio = max === min ? 0.5 : (x.count - min) / (max - min)
-    const level = Math.max(0, Math.min(4, Math.round(ratio * 4)))
-    return { ...x, level }
-  })
-})
+    const ratio = max === min ? 0.5 : (x.count - min) / (max - min);
+    const level = Math.max(0, Math.min(4, Math.round(ratio * 4)));
+    return { ...x, level };
+  });
+});
 
-const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] as const
+const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] as const;
 </script>
 
 <template>
@@ -106,25 +103,23 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
         <section class="tw-card p-5">
           <div class="flex gap-3 items-start">
             <img
-              v-if="site?.avatar"
+              v-if="siteData?.avatar"
               class="h-[72px] w-[72px] rounded-full border border-slate-200 object-cover"
-              :src="site.avatar"
-              alt="avatar"
-            />
+              :src="siteData.avatar"
+              alt="avatar" />
             <div class="min-w-0">
-              <h1 class="m-0 text-2xl font-bold text-slate-900">{{ site?.name || site?.title || '博客' }}</h1>
-              <p v-if="site?.bio" class="mt-2 text-slate-700">{{ site.bio }}</p>
-              <p v-if="site?.intro" class="mt-1 text-slate-500">{{ site.intro }}</p>
+              <h1 class="m-0 text-2xl font-bold text-slate-900">{{ siteData?.name || siteData?.title || '博客' }}</h1>
+              <p v-if="siteData?.bio" class="mt-2 text-slate-700">{{ siteData.bio }}</p>
+              <p v-if="siteData?.intro" class="mt-1 text-slate-500">{{ siteData.intro }}</p>
 
-              <div v-if="site?.social?.length" class="mt-3 flex flex-wrap gap-2">
+              <div v-if="siteData?.social?.length" class="mt-3 flex flex-wrap gap-2">
                 <a
-                  v-for="s in site.social"
+                  v-for="s in siteData.social"
                   :key="s.url"
                   :href="s.url"
                   target="_blank"
                   rel="noreferrer"
-                  class="text-sm text-blue-600 hover:underline"
-                >
+                  class="text-sm text-blue-600 hover:underline">
                   {{ s.label }}
                 </a>
               </div>
@@ -132,7 +127,7 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
           </div>
         </section>
 
-        <section v-if="site?.home?.showStats" class="tw-card p-5">
+        <section v-if="siteData?.home?.showStats" class="tw-card p-5">
           <div class="grid grid-cols-3 gap-2">
             <div class="rounded-xl border border-slate-100 bg-slate-50 p-3 text-center">
               <div class="text-lg font-bold text-slate-900">{{ stats.posts }}</div>
@@ -149,19 +144,18 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
           </div>
         </section>
 
-        <section v-if="site?.projects?.length" class="tw-card p-5">
+        <section v-if="siteData?.projects?.length" class="tw-card p-5">
           <div class="mb-3 flex items-baseline justify-between gap-2">
             <h2 class="m-0 text-sm font-semibold text-slate-900">我的项目</h2>
           </div>
           <div class="space-y-2">
             <a
-              v-for="p in site.projects"
+              v-for="p in siteData.projects"
               :key="p.url || p.name"
               :href="p.url"
               target="_blank"
               rel="noreferrer"
-              class="block rounded-xl border border-slate-200 bg-white p-3 no-underline transition hover:bg-slate-50 hover:border-slate-300"
-            >
+              class="block rounded-xl border border-slate-200 bg-white p-3 no-underline transition hover:bg-slate-50 hover:border-slate-300">
               <div class="flex items-center gap-2">
                 <span v-if="p.icon" class="text-base">{{ p.icon }}</span>
                 <span class="text-sm font-semibold text-slate-900">{{ p.name }}</span>
@@ -182,8 +176,7 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
             <li v-for="c in sidebarCategories" :key="c.slug">
               <NuxtLink
                 class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 no-underline transition hover:bg-slate-50 hover:border-slate-300"
-                :to="`/categories/${c.slug}`"
-              >
+                :to="`/categories/${c.slug}`">
                 <span class="text-sm font-semibold text-slate-900">{{ c.name }}</span>
                 <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
                   {{ c.count }}
@@ -206,9 +199,8 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
               :title="`${t.name}（${t.count}）`"
               :class="[
                 'inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 leading-none text-slate-900 no-underline hover:bg-slate-50 hover:border-slate-300',
-                tagLevelClass[t.level]
-              ]"
-            >
+                tagLevelClass[t.level],
+              ]">
               {{ t.name }}
             </NuxtLink>
           </div>

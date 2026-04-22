@@ -1,15 +1,30 @@
 <script setup lang="ts">
+import { useIsDesktopProduction } from '~/composables/useDesktopContent';
 const props = defineProps<{ open: boolean }>();
 const emit = defineEmits<{ (e: 'close'): void }>();
 
 const router = useRouter();
+const isDesktopProd = useIsDesktopProduction();
 
 const inputRef = ref<HTMLInputElement | null>(null);
 const keyword = ref('');
 
-const postsReq = useAsyncData('posts:search', () => queryCollection('posts').order('date', 'DESC').all(), {
+const postsReq = useAsyncData(
+  'posts:search',
+  async () => {
+    if (isDesktopProd.value) {
+      const list = await $fetch<any[]>('/api/desktop/posts');
+      return (list ?? []).map((p: any) => ({
+        ...p,
+        path: `/posts/${String(p.slug || '').replace(/^\/+/, '')}`,
+      }));
+    }
+    return await queryCollection('posts').order('date', 'DESC').all();
+  },
+  {
   immediate: false,
-});
+  },
+);
 
 const publishedPosts = computed(() => (postsReq.data.value ?? []).filter((p: any) => !p.draft));
 

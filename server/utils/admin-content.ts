@@ -52,12 +52,30 @@ export function assertAdminEnabled() {
   }
 }
 
-export function getPostsDir() {
+function getDesktopDataDir() {
+  const v = String(process.env.NUXT_DESKTOP_DATA_DIR || '').trim();
+  return v ? resolve(v) : '';
+}
+
+function getBundledPostsDir() {
   return resolve(process.cwd(), 'content', 'posts');
 }
 
-function safeResolvePostPath(slug: string) {
-  const postsDir = getPostsDir();
+function getDesktopPostsDir() {
+  const base = getDesktopDataDir();
+  return base ? resolve(base, 'content', 'posts') : '';
+}
+
+async function pathExists(p: string) {
+  try {
+    await stat(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function safeResolvePostPath(postsDir: string, slug: string) {
   const filePath = resolve(postsDir, `${slug}.md`);
   const rel = relative(postsDir, filePath);
   if (rel.startsWith('..') || isAbsolute(rel)) {
@@ -77,11 +95,9 @@ async function walk(dir: string): Promise<string[]> {
   return files;
 }
 
-export async function listPosts(): Promise<AdminPostListItem[]> {
-  const postsDir = getPostsDir();
-  await mkdir(postsDir, { recursive: true });
+async function collectPosts(postsDir: string): Promise<AdminPostListItem[]> {
+  if (!(await pathExists(postsDir))) return [];
   const allFiles = (await walk(postsDir)).filter((f) => f.endsWith('.md'));
-
   const items: AdminPostListItem[] = [];
   for (const file of allFiles) {
     const slug = relative(postsDir, file).replace(/\\/g, '/').replace(/\.md$/, '');
@@ -101,6 +117,21 @@ export async function listPosts(): Promise<AdminPostListItem[]> {
       updatedAt: st.mtime.toISOString(),
     });
   }
+  return items;
+}
+
+export async function listPosts(): Promise<AdminPostListItem[]> {
+  const bundledDir = getBundledPostsDir();
+  const desktopDir = getDesktopPostsDir();
+  const [bundled, desktop] = await Promise.all([
+    collectPosts(bundledDir).catch(() => []),
+    desktopDir ? collectPosts(desktopDir).catch(() => []) : Promise.resolve([]),
+  ]);
+
+  const map = new Map<string, AdminPostListItem>();
+  for (const it of bundled) map.set(it.slug, it);
+  for (const it of desktop) map.set(it.slug, it);
+  const items = Array.from(map.values());
 
   items.sort(
     (a, b) =>
@@ -111,7 +142,11 @@ export async function listPosts(): Promise<AdminPostListItem[]> {
 }
 
 export async function readPost(slug: string) {
-  const filePath = safeResolvePostPath(slug);
+  const desktopDir = getDesktopPostsDir();
+  const bundledDir = getBundledPostsDir();
+  const desktopPath = desktopDir ? safeResolvePostPath(desktopDir, slug) : '';
+  const bundledPath = safeResolvePostPath(bundledDir, slug);
+  const filePath = desktopPath && (await pathExists(desktopPath)) ? desktopPath : bundledPath;
   const markdown = await readFile(filePath, 'utf8');
   const parsed = matter(markdown);
   return {
@@ -130,7 +165,9 @@ export async function writePost(
         body: string;
       },
 ) {
-  const filePath = safeResolvePostPath(slug);
+  const desktopDir = getDesktopPostsDir();
+  const postsDir = desktopDir || getBundledPostsDir();
+  const filePath = safeResolvePostPath(postsDir, slug);
   await mkdir(dirname(filePath), { recursive: true });
   const markdown = 'markdown' in input ? input.markdown : matter.stringify(input.body ?? '', input.meta ?? {});
   await writeFile(filePath, (markdown || '').trimEnd() + '\n', 'utf8');
@@ -138,7 +175,9 @@ export async function writePost(
 }
 
 export async function deletePost(slug: string) {
-  const filePath = safeResolvePostPath(slug);
+  const desktopDir = getDesktopPostsDir();
+  const postsDir = desktopDir || getBundledPostsDir();
+  const filePath = safeResolvePostPath(postsDir, slug);
   await rm(filePath, { force: true });
   return { ok: true };
 }

@@ -1,37 +1,35 @@
 <script setup lang="ts">
-const route = useRoute()
-const slug = computed(() => String(route.params.category || ''))
+import { usePostsList } from '~/composables/useDesktopContent';
+const route = useRoute();
+const slug = computed(() => String(route.params.category || ''));
 
 function fromBase64Url(input: string) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const g: any = globalThis as any
+  const g: any = globalThis as any;
   if (typeof g.Buffer !== 'undefined') {
-    return g.Buffer.from(input, 'base64url').toString('utf8')
+    return g.Buffer.from(input, 'base64url').toString('utf8');
   }
-  const b64 = input.replace(/-/g, '+').replace(/_/g, '/')
+  const b64 = input.replace(/-/g, '+').replace(/_/g, '/');
   // 补齐 padding
-  const pad = b64.length % 4 ? '='.repeat(4 - (b64.length % 4)) : ''
-  return decodeURIComponent(escape(atob(b64 + pad)))
+  const pad = b64.length % 4 ? '='.repeat(4 - (b64.length % 4)) : '';
+  return decodeURIComponent(escape(atob(b64 + pad)));
 }
 
 const category = computed(() => {
   try {
-    return fromBase64Url(slug.value)
+    return fromBase64Url(slug.value);
   } catch {
-    return slug.value
+    return slug.value;
   }
-})
+});
 
-const { data: posts } = await useAsyncData(
-  () => `posts:category:${encodeURIComponent(category.value)}`,
-  () => queryCollection('posts').order('date', 'DESC').all()
-)
+const { data: posts } = await usePostsList('posts:categories:all');
 
 const list = computed(() =>
   (posts.value ?? [])
     .filter((p: any) => !p.draft)
-    .filter((p: any) => String(p.category || '未分类') === category.value)
-)
+    .filter((p: any) => String(p.category || '未分类') === category.value),
+);
 </script>
 
 <template>

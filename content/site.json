@@ -28,6 +28,12 @@
       "url": "https://bs.kjsone.com",
       "icon": "👷‍♀️",
       "desc": "一个简单的装修项目管理系统"
+    },
+    {
+      "name": "固件羊",
+      "url": "https://easyhey.com/",
+      "icon": "🐑",
+      "desc": "下一代固件烧录方案，让固件烧录变得简单"
     }
   ],
   "comments": {

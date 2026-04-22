@@ -1,9 +1,8 @@
 <script setup lang="ts">
+import { usePostsList } from '~/composables/useDesktopContent';
 const route = useRoute()
 
-const { data: posts } = await useAsyncData('posts:list', () =>
-  queryCollection('posts').order('date', 'DESC').all()
-)
+const { data: posts } = await usePostsList('posts:list')
 
 const publishedPosts = computed(() =>
   (posts.value ?? []).filter((p: any) => !p.draft)

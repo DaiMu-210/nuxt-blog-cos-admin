@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { data: site } = await useAsyncData('site:layout', () => queryCollection('site').first());
+import { useSiteData } from '~/composables/useDesktopContent';
+const { data: site } = await useSiteData('site:layout');
+const siteData = computed(() => (site.value ?? {}) as any);
 const isDev = import.meta.dev;
 const config = useRuntimeConfig();
 const isDesktopMode = computed(() => Boolean((config as any)?.public?.desktopMode));
@@ -28,7 +30,7 @@ function navLinkClass(active: boolean) {
     <header class="border-b border-slate-200 bg-white">
       <div class="tw-container h-14 flex items-center justify-between">
         <NuxtLink class="font-bold text-slate-900 no-underline" to="/">
-          {{ site?.title || '我的博客' }}
+          {{ siteData?.title || '我的博客' }}
         </NuxtLink>
         <nav class="flex items-center">
           <NuxtLink v-for="it in navItems" :key="it.to" :to="it.to" :class="navLinkClass(it.match(route.path))">
@@ -71,8 +73,8 @@ function navLinkClass(active: boolean) {
 
     <footer class="border-t border-slate-100 bg-white">
       <div class="tw-container h-14 flex items-center justify-between text-sm text-slate-500">
-        <span class="font-semibold text-slate-900">{{ site?.title || '我的博客' }}</span>
-        <SiteUptime v-if="site?.since" :since="site.since" />
+        <span class="font-semibold text-slate-900">{{ siteData?.title || '我的博客' }}</span>
+        <SiteUptime v-if="siteData?.since" :since="siteData.since" />
       </div>
     </footer>
   </div>
