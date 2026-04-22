@@ -35,7 +35,7 @@ async function confirmDelete() {
   deleteErrMsg.value = ''
   try {
     await $fetch(`/api/admin/posts/${encodeSlug(targetSlug.value)}`, {
-      method: 'DELETE',
+      method: 'DELETE' as any,
       credentials: 'include',
     })
     confirmOpen.value = false

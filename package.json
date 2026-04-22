@@ -1,10 +1,15 @@
 {
   "name": "nuxt-blog-cos-admin",
+  "version": "0.1.0",
   "type": "module",
+  "main": "electron/main.cjs",
   "private": true,
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "desktop:dev": "cross-env NUXT_DESKTOP=1 ELECTRON_DEV=1 electron electron/main.cjs",
+    "desktop:build": "cross-env NUXT_DESKTOP=1 nuxt build && electron-builder --win nsis",
+    "desktop:portable": "cross-env NUXT_DESKTOP=1 nuxt build && electron-builder --win portable",
     "generate": "nuxt generate",
     "generate:dist": "nuxt generate && node scripts/export-dist.mjs",
     "deploy:cos": "node scripts/deploy-cos.mjs",
@@ -14,7 +19,6 @@
   "dependencies": {
     "@nuxt/content": "^3.13.0",
     "@toast-ui/editor": "^3.2.2",
-    "better-sqlite3": "^12.9.0",
     "gray-matter": "^4.0.3",
     "nuxt": "^4.4.2",
     "vue": "^3.5.32",
@@ -24,7 +28,8 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "@parcel/watcher",
-      "better-sqlite3",
+      "electron",
+      "electron-winstaller",
       "esbuild"
     ]
   },
@@ -32,6 +37,43 @@
     "@nuxtjs/tailwindcss": "7.0.0-beta.1",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^25.6.0",
-    "tailwindcss": "^4.2.2"
+    "cross-env": "^7.0.3",
+    "electron": "^35.0.0",
+    "electron-builder": "^26.0.12",
+    "tailwindcss": "^4.2.2",
+    "vue-tsc": "^3.2.7"
+  },
+  "build": {
+    "appId": "com.nuxt.blog.cos.admin",
+    "productName": "Nuxt Blog COS Admin",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "asar": false,
+    "files": [
+      "electron/**/*",
+      ".output/**/*",
+      "!**/.output/server/node_modules/**",
+      "content/**/*",
+      "public/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Nuxt Blog COS Admin"
+    }
   }
 }

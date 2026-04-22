@@ -1,6 +1,7 @@
 export default defineNuxtRouteMiddleware(() => {
-  if (!import.meta.dev) {
-    return navigateTo('/')
+  const cfg = useRuntimeConfig();
+  const desktopMode = Boolean((cfg as any)?.public?.desktopMode);
+  if (!import.meta.dev && !desktopMode) {
+    return navigateTo('/');
   }
-})
-
+});

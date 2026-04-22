@@ -47,21 +47,59 @@ yarn dev
 bun run dev
 ```
 
+## Desktop（Electron / Windows）
+
+桌面模式会自动注入 `NUXT_DESKTOP=1`，用于放开 /admin 与本地写文件能力（仅桌面/本地使用，线上静态部署不受影响）。
+
+### 桌面开发运行
+
+```bash
+pnpm desktop:dev
+```
+
+如果 `pnpm install` 后 Electron 未正确下载（运行 `pnpm -s exec electron --version` 报错），可执行：
+
+```bash
+pnpm ignored-builds
+```
+
+如仍显示 `electron` / `electron-winstaller`，用镜像重建一次：
+
+```bash
+$env:ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
+pnpm rebuild electron electron-winstaller
+```
+
+### 构建 Windows 可执行文件（portable）
+
+会先执行 `nuxt build` 生成 `.output/`，再打包 Electron：
+
+```bash
+pnpm desktop:build
+```
+
+产物默认输出到 `dist-electron/`。
+
+### 数据目录与备份
+
+- 本地私有配置：开发环境默认写入项目 `.data/local-config.json`；桌面应用运行时写入用户数据目录的 `.data/local-config.json`
+- 建议定期备份：`content/`（文章/站点内容）与本地私有配置文件
+
 ### 本地编辑文章
 
 启动开发服务器后，访问：
 
-- `http://localhost:3000/admin/login`
+- `http://localhost:3000/admin/setup`（首次使用需要初始化）
+- `http://localhost:3000/admin/login`（初始化后登录）
 
 管理端会直接读写项目里的 `content/posts/*.md` 文件。
 
-在启动开发服务前，请先配置管理员密码（PowerShell 示例）：
+首次初始化会将管理员配置写入项目根目录的 `.data/local-config.json`（已在 `.gitignore` 中忽略）。
+之后登录使用初始化时设置的密码。
+
+可选环境变量（用于 RSS 等需要绝对链接的功能）：
 
 ```powershell
-$env:NUXT_ADMIN_PASSWORD="请替换成强密码"
-# 可选：会话签名密钥（不配置时默认使用 NUXT_ADMIN_PASSWORD）
-$env:NUXT_ADMIN_SESSION_SECRET="请替换成另一个随机字符串"
-# 可选：站点地址（用于 RSS 等需要绝对链接的功能）
 $env:NUXT_PUBLIC_SITE_URL="https://your-domain.com"
 # 可选：评论仓库（owner/repo），用于 beaudar
 $env:NUXT_PUBLIC_BEAUDAR_REPO="owner/repo"

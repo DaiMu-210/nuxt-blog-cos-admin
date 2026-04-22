@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const { data: site } = await useAsyncData('site:layout', () => queryCollection('site').first());
 const isDev = import.meta.dev;
+const config = useRuntimeConfig();
+const isDesktopMode = computed(() => Boolean((config as any)?.public?.desktopMode));
 
 useHead({
   link: [{ rel: 'alternate', type: 'application/rss+xml', title: 'RSS', href: '/rss.xml' }],
@@ -50,7 +52,7 @@ function navLinkClass(active: boolean) {
               <path d="M21 21l-4.3-4.3" />
             </svg>
           </button>
-          <NuxtLink v-if="isDev" to="/admin" class="ml-3 text-sm text-slate-500 hover:text-slate-900">
+          <NuxtLink v-if="isDev || isDesktopMode" to="/admin" class="ml-3 text-sm text-slate-500 hover:text-slate-900">
             控制台
           </NuxtLink>
         </nav>

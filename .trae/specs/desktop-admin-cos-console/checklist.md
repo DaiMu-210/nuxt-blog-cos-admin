@@ -1,0 +1,9 @@
+- [x] 首次启动未初始化时会进入初始化向导，可创建密码并完成初始化
+- [x] 初始化后登录校验不再依赖 .env 的 NUXT_ADMIN_PASSWORD（本地配置优先）
+- [x] session secret 按“时间戳 + 8 位随机字母”生成，TTL 默认一周且可在控制台修改
+- [x] 控制台区分“用户设置（本地私有）”与“站点设置（写入 content/site.json）”
+- [x] COS 参数可在控制台保存到本地私有配置文件，且不会出现在静态产物/前台接口中
+- [x] 控制台点击可触发生成 dist 并用 coscli 同步到桶根目录（带 --delete），错误信息不泄露密钥
+- [x] 桌面模式（Electron/Windows）可启动本地服务并打开控制台页面，支持编辑与发布
+- [x] 首页用户卡片显示昵称字段，header/footer 仍显示网站标题
+- [x] `pnpm run generate:dist` 仍可用，导出物不包含 /admin 与 /api

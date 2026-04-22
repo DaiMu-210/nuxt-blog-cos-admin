@@ -7,6 +7,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      desktopMode: (process.env.NUXT_DESKTOP || '').trim() === '1',
       siteUrl: '',
       beaudarRepo: '',
       beaudarTheme: 'github-light',
@@ -24,6 +25,9 @@ export default defineNuxtConfig({
   },
 
   content: {
+    experimental: {
+      sqliteConnector: 'native',
+    },
     build: {
       markdown: {
         toc: {

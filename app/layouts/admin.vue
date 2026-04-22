@@ -7,6 +7,7 @@ const items = computed(() => [
   { to: '/admin/site', label: '站点设置', icon: '⚙️' },
   { to: '/admin/links', label: '友链管理', icon: '🔗' },
   { to: '/admin/taxonomy', label: '分类/标签', icon: '🏷️' },
+  { to: '/admin/user', label: '用户设置', icon: '👤' },
 ]);
 
 function isActive(path: string) {

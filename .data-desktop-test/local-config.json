@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "admin": {
+    "passwordHash": "scrypt$c215b2f50ae440d6c05df4a721dd199c$dfdc9da01429b55754499bc67c0ac15111ae99870c18ae116018ba1ab1519207",
+    "sessionSecret": "1a0b4ebfae36bd28d510a3625bf284ff2fe4e80a50a6c9fad1c097998b780477",
+    "ttlSeconds": 600
+  },
+  "cos": {
+    "bucket": "dummy-bucket",
+    "region": "ap-guangzhou",
+    "secretId": "dummySecretId",
+    "secretKey": "dummySecretKey"
+  }
+}

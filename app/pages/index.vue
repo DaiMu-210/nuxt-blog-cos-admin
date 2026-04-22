@@ -112,7 +112,7 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
               alt="avatar"
             />
             <div class="min-w-0">
-              <h1 class="m-0 text-2xl font-bold text-slate-900">{{ site?.title || '博客' }}</h1>
+              <h1 class="m-0 text-2xl font-bold text-slate-900">{{ site?.name || site?.title || '博客' }}</h1>
               <p v-if="site?.bio" class="mt-2 text-slate-700">{{ site.bio }}</p>
               <p v-if="site?.intro" class="mt-1 text-slate-500">{{ site.intro }}</p>
 
