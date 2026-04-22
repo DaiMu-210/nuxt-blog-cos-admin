@@ -303,7 +303,7 @@ async function changePassword() {
             </div>
             <pre
               v-if="publishJob.logs?.length"
-              class="mt-3 max-h-[320px] overflow-auto rounded-xl border border-slate-200 bg-slate-900 text-slate-100 p-3 text-xs leading-relaxed whitespace-pre-wrap dark:border-slate-800"
+              class="mt-3 max-h-[320px] overflow-auto tw-scrollbar rounded-xl border border-slate-200 bg-slate-900 text-slate-100 p-3 text-xs leading-relaxed whitespace-pre-wrap dark:border-slate-800"
               >{{ publishJob.logs.join('\n') }}</pre
             >
           </div>

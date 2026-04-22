@@ -41,7 +41,6 @@ function navLinkClass(active: boolean) {
           <NuxtLink v-for="it in navItems" :key="it.to" :to="it.to" :class="navLinkClass(it.match(route.path))">
             {{ it.label }}
           </NuxtLink>
-          <ThemeToggleButton class="ml-3" />
           <button
             type="button"
             class="ml-3 inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-900/60 dark:hover:text-slate-50"
@@ -66,6 +65,7 @@ function navLinkClass(active: boolean) {
             class="ml-3 text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-50">
             控制台
           </NuxtLink>
+          <ThemeToggleButton class="ml-3" />
         </nav>
       </div>
     </header>

@@ -34,7 +34,7 @@ async function logout() {
 <template>
   <div class="min-h-screen grid grid-cols-1 md:grid-cols-[240px_1fr] bg-slate-50 dark:bg-slate-950">
     <aside
-      class="border-b md:border-b-0 md:border-r border-slate-200 bg-white p-3 md:p-4 flex md:flex-col gap-3 md:gap-4 md:sticky md:top-0 md:h-screen overflow-auto dark:border-slate-800 dark:bg-slate-950">
+      class="border-b md:border-b-0 md:border-r border-slate-200 bg-white p-3 md:p-4 flex md:flex-col gap-3 md:gap-4 md:sticky md:top-0 md:h-screen overflow-auto tw-scrollbar dark:border-slate-800 dark:bg-slate-950">
       <div class="flex items-center justify-between gap-3 px-2">
         <div class="font-extrabold whitespace-nowrap text-slate-900 dark:text-slate-50">控制台</div>
         <ThemeToggleButton />
@@ -61,7 +61,7 @@ async function logout() {
     </aside>
 
     <main class="p-4 md:p-5 min-h-0 overflow-hidden flex flex-col">
-      <div class="flex-1 min-h-0 overflow-auto">
+      <div class="flex-1 min-h-0 overflow-auto tw-scrollbar">
         <slot />
       </div>
     </main>

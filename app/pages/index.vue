@@ -121,7 +121,7 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
                   :href="s.url"
                   target="_blank"
                   rel="noreferrer"
-                  class="text-sm text-blue-600 hover:underline dark:text-blue-400">
+                  class="tw-link text-sm">
                   {{ s.label }}
                 </a>
               </div>
@@ -170,7 +170,7 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
         <section v-if="sidebarCategories.length" class="tw-card p-5">
           <div class="mb-3 flex items-baseline justify-between gap-2">
             <h2 class="m-0 text-sm font-semibold text-slate-900 dark:text-slate-50">分类</h2>
-            <NuxtLink v-if="hasMoreCategories" class="text-xs text-blue-600 hover:underline dark:text-blue-400" to="/categories">
+            <NuxtLink v-if="hasMoreCategories" class="tw-link text-xs" to="/categories">
               更多
             </NuxtLink>
           </div>
@@ -191,7 +191,7 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
         <section v-if="tagCloud.length" class="tw-card p-5">
           <div class="mb-3 flex items-baseline justify-between gap-2">
             <h2 class="m-0 text-sm font-semibold text-slate-900 dark:text-slate-50">词云</h2>
-            <NuxtLink class="text-xs text-blue-600 hover:underline dark:text-blue-400" to="/posts">更多</NuxtLink>
+            <NuxtLink class="tw-link text-xs" to="/posts">更多</NuxtLink>
           </div>
           <div class="flex flex-wrap gap-2">
             <NuxtLink
@@ -247,7 +247,7 @@ const tagLevelClass = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'] 
         <section>
           <div class="flex items-baseline justify-between gap-2">
             <h2 class="m-0 text-base font-semibold text-slate-900 dark:text-slate-50">最新文章</h2>
-            <NuxtLink class="text-sm text-blue-600 hover:underline dark:text-blue-400" to="/posts">查看全部</NuxtLink>
+            <NuxtLink class="tw-link text-sm" to="/posts">查看全部</NuxtLink>
           </div>
 
           <ul v-if="latestPosts.length" class="mt-2 divide-y divide-slate-100 dark:divide-slate-800">

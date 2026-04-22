@@ -46,7 +46,7 @@ const heatmapPosts = computed(() => postsReq.data.value ?? []);
       <section class="tw-card p-4">
         <div class="mb-3 flex items-baseline justify-between gap-2">
           <h2 class="text-base font-semibold text-slate-900 dark:text-slate-50">最近文章</h2>
-          <NuxtLink class="text-sm text-blue-600 hover:underline dark:text-blue-400" to="/admin/posts">查看全部</NuxtLink>
+          <NuxtLink class="tw-link text-sm" to="/admin/posts">查看全部</NuxtLink>
         </div>
         <div v-if="postsReq.pending.value" class="text-sm text-slate-500 dark:text-slate-400">加载中...</div>
         <div v-else-if="postsReq.error.value" class="text-sm text-red-700">
@@ -66,7 +66,7 @@ const heatmapPosts = computed(() => postsReq.data.value ?? []);
                 <span v-if="p.draft"> · draft</span>
               </div>
             </div>
-            <NuxtLink class="text-sm text-blue-600 hover:underline dark:text-blue-400" :to="`/posts/${p.slug}`" target="_blank"
+            <NuxtLink class="tw-link text-sm" :to="`/posts/${p.slug}`" target="_blank"
               >预览</NuxtLink
             >
           </li>
@@ -103,7 +103,7 @@ const heatmapPosts = computed(() => postsReq.data.value ?? []);
     <section class="tw-card mt-4 p-4">
       <div class="mb-3 flex items-baseline justify-between gap-2">
         <h2 class="text-base font-semibold text-slate-900 dark:text-slate-50">发布活跃度</h2>
-        <NuxtLink class="text-sm text-blue-600 hover:underline dark:text-blue-400" to="/admin/posts">文章列表</NuxtLink>
+        <NuxtLink class="tw-link text-sm" to="/admin/posts">文章列表</NuxtLink>
       </div>
       <div v-if="postsReq.pending.value" class="text-sm text-slate-500 dark:text-slate-400">加载中...</div>
       <div v-else-if="postsReq.error.value" class="text-sm text-red-700">

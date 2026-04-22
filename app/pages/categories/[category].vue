@@ -36,7 +36,7 @@ const list = computed(() =>
   <section>
     <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-50">分类：{{ category }}</h1>
     <p class="mt-2 mb-4 text-slate-500 dark:text-slate-400">
-      <NuxtLink class="text-blue-600 hover:underline dark:text-blue-400" to="/categories">← 返回分类</NuxtLink>
+      <NuxtLink class="tw-link" to="/categories">← 返回分类</NuxtLink>
     </p>
 
     <ul v-if="list.length" class="divide-y divide-slate-100 dark:divide-slate-800">

@@ -85,7 +85,7 @@ function levelClass(lv: number) {
 </script>
 
 <template>
-  <div class="overflow-x-auto">
+  <div class="overflow-x-auto tw-scrollbar">
     <div class="inline-grid grid-flow-col auto-cols-max gap-2">
       <div v-for="(week, wi) in cells" :key="wi" class="grid grid-rows-7 gap-1">
         <div
@@ -111,4 +111,3 @@ function levelClass(lv: number) {
     </div>
   </div>
 </template>
-

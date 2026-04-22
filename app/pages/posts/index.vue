@@ -27,7 +27,7 @@ const filteredPosts = computed(() => {
         <span class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-900 dark:bg-slate-900/60 dark:text-slate-100">
           标签：{{ activeTag }}
         </span>
-        <NuxtLink class="text-sm text-blue-600 hover:underline dark:text-blue-400" to="/posts">清除</NuxtLink>
+        <NuxtLink class="tw-link text-sm" to="/posts">清除</NuxtLink>
       </div>
     </div>
 

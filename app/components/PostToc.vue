@@ -218,7 +218,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div
-        class="mt-2 max-h-[calc(100vh-7rem)] overflow-auto pr-1 md:pr-0 md:[scrollbar-width:none] md:[-ms-overflow-style:none] md:[&::-webkit-scrollbar]:hidden">
+        class="mt-2 max-h-[calc(100vh-7rem)] overflow-auto pr-1 md:pr-0 tw-scrollbar">
         <ul class="space-y-1">
           <li v-for="it in items" :key="it.id">
             <div class="group flex items-center gap-2">
@@ -281,7 +281,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <div class="max-h-[60vh] overflow-auto p-2">
+        <div class="max-h-[60vh] overflow-auto p-2 tw-scrollbar">
           <ul class="space-y-1">
             <li v-for="it in items" :key="it.id">
               <div class="group flex items-center gap-2">

@@ -85,7 +85,7 @@ async function confirmDelete() {
           </div>
         </div>
         <div class="flex items-center gap-3 shrink-0">
-          <NuxtLink class="text-sm text-blue-600 hover:underline dark:text-blue-400" :to="`/posts/${p.slug}`" target="_blank"
+          <NuxtLink class="tw-link text-sm" :to="`/posts/${p.slug}`" target="_blank"
             >预览</NuxtLink
           >
           <button

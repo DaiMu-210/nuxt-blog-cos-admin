@@ -84,7 +84,7 @@ watch(
               v-model="keyword"
               type="text"
               placeholder="搜索文章标题/摘要/分类/标签"
-              class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-slate-500"
+              class="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-emerald-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-emerald-400"
               @keydown.enter.prevent="onEnter"
               @keydown.esc.prevent="close" />
           </div>
@@ -94,7 +94,7 @@ watch(
 
             <div v-else-if="!normalized" class="text-sm text-slate-500 dark:text-slate-400">输入关键词开始搜索</div>
 
-            <ul v-else-if="results.length" class="mt-1 max-h-64 divide-y divide-slate-100 overflow-auto dark:divide-slate-800">
+            <ul v-else-if="results.length" class="mt-1 max-h-64 divide-y divide-slate-100 overflow-auto tw-scrollbar dark:divide-slate-800">
               <li v-for="post in results" :key="post.path" class="py-3">
                 <button type="button" class="w-full text-left" @click="goToPost(post.path)">
                   <div class="text-sm font-semibold text-slate-900 dark:text-slate-50">
