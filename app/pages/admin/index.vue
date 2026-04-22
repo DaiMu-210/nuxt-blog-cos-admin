@@ -6,6 +6,7 @@ definePageMeta({ layout: 'admin', ssr: false, middleware: ['admin-dev-only'] });
 const { postsReq, stats } = useAdminStats();
 
 const recentPosts = computed(() => (postsReq.data.value ?? []).slice(0, 6));
+const heatmapPosts = computed(() => postsReq.data.value ?? []);
 </script>
 
 <template>
@@ -41,7 +42,7 @@ const recentPosts = computed(() => (postsReq.data.value ?? []).slice(0, 6));
       </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
       <section class="tw-card p-4">
         <div class="mb-3 flex items-baseline justify-between gap-2">
           <h2 class="text-base font-semibold text-slate-900">最近文章</h2>
@@ -74,7 +75,7 @@ const recentPosts = computed(() => (postsReq.data.value ?? []).slice(0, 6));
 
       <section class="tw-card p-4">
         <h2 class="mb-3 text-base font-semibold text-slate-900">快捷入口</h2>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-3 items-start">
           <NuxtLink
             class="tw-card p-4 font-semibold text-slate-900 no-underline hover:border-slate-300"
             to="/admin/posts">
@@ -98,5 +99,17 @@ const recentPosts = computed(() => (postsReq.data.value ?? []).slice(0, 6));
         </div>
       </section>
     </div>
+
+    <section class="tw-card mt-4 p-4">
+      <div class="mb-3 flex items-baseline justify-between gap-2">
+        <h2 class="text-base font-semibold text-slate-900">发布活跃度</h2>
+        <NuxtLink class="text-sm text-blue-600 hover:underline" to="/admin/posts">文章列表</NuxtLink>
+      </div>
+      <div v-if="postsReq.pending.value" class="text-sm text-slate-500">加载中...</div>
+      <div v-else-if="postsReq.error.value" class="text-sm text-red-700">
+        加载失败：{{ postsReq.error.value?.data?.message || postsReq.error.value?.message }}
+      </div>
+      <AdminActivityHeatmap v-else :posts="heatmapPosts" />
+    </section>
   </section>
 </template>

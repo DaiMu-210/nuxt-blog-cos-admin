@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useToast } from '~/composables/useToast';
+import { enhanceCodeBlocks } from '~/utils/code-block';
+
 const props = defineProps<{
   value: string;
 }>();
@@ -10,6 +13,12 @@ const emit = defineEmits<{
 const el = ref<HTMLDivElement | null>(null);
 let viewer: any = null;
 let lastValue = '';
+const toast = useToast();
+
+function isHighlighted(node: HTMLElement) {
+  const v = (node as any)?.dataset?.highlighted || node.getAttribute('data-highlighted');
+  return v === 'yes' || v === 'true' || v === '1';
+}
 
 async function highlightCode() {
   if (!import.meta.client) return;
@@ -19,11 +28,12 @@ async function highlightCode() {
   const hljs = mod?.default || mod;
   const nodes = root.querySelectorAll<HTMLElement>('pre code');
   for (const node of nodes) {
-    if (node.classList.contains('hljs')) continue;
+    if (isHighlighted(node)) continue;
     try {
       hljs.highlightElement(node);
     } catch {}
   }
+  enhanceCodeBlocks(root, { toast });
 }
 
 onMounted(async () => {
