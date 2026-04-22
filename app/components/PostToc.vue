@@ -16,6 +16,7 @@ type TocItem = {
 const props = defineProps<{
   links?: TocLink[];
   contentEl: HTMLElement | null;
+  refreshKey?: number;
 }>();
 
 const items = ref<TocItem[]>([]);
@@ -177,6 +178,11 @@ watch(
 
 watch(
   () => props.contentEl,
+  () => nextTick(rebuild),
+);
+
+watch(
+  () => props.refreshKey,
   () => nextTick(rebuild),
 );
 

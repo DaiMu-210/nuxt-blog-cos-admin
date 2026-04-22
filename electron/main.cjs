@@ -73,8 +73,9 @@ function spawnProcess(cmd, args, opts) {
 function spawnNuxtServer({ port }) {
   const appRoot = getAppRoot();
   const entry = resolveNuxtServerEntry(appRoot);
+  const forceDev = String(process.env.ELECTRON_DEV || '').trim() === '1';
 
-  if (fs.existsSync(entry)) {
+  if (!forceDev && fs.existsSync(entry)) {
     const env = {
       ...process.env,
       NUXT_DESKTOP: '1',

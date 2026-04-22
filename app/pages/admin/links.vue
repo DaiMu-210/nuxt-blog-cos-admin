@@ -1,46 +1,46 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', ssr: false, middleware: ['admin-dev-only'] })
+import { useToast } from '../../composables/useToast';
+definePageMeta({ layout: 'admin', ssr: false, middleware: ['admin-dev-only'] });
 
-type LinkItem = { title: string; url: string; desc?: string; avatar?: string }
-type LinkGroup = { name: string; items: LinkItem[] }
-type LinksData = { groups: LinkGroup[] }
+type LinkItem = { title: string; url: string; desc?: string; avatar?: string };
+type LinkGroup = { name: string; items: LinkItem[] };
+type LinksData = { groups: LinkGroup[] };
 
 const { data, pending, error, refresh } = await useFetch<LinksData>('/api/admin/links', {
-  server: false
-})
+  server: false,
+});
 
-const form = reactive<LinksData>({ groups: [] })
+const form = reactive<LinksData>({ groups: [] });
 watchEffect(() => {
-  if (!data.value) return
+  if (!data.value) return;
   form.groups = (data.value.groups || []).map((g) => ({
     name: g.name,
-    items: (g.items || []).map((i) => ({ ...i }))
-  }))
-})
+    items: (g.items || []).map((i) => ({ ...i })),
+  }));
+});
 
 function addGroup() {
-  form.groups.push({ name: '新分组', items: [] })
+  form.groups.push({ name: '新分组', items: [] });
 }
 function removeGroup(index: number) {
-  form.groups = form.groups.filter((_, i) => i !== index)
+  form.groups = form.groups.filter((_, i) => i !== index);
 }
 function addItem(groupIndex: number) {
-  const g = form.groups[groupIndex]
-  if (!g) return
-  g.items.push({ title: '', url: '', desc: '', avatar: '' })
+  const g = form.groups[groupIndex];
+  if (!g) return;
+  g.items.push({ title: '', url: '', desc: '', avatar: '' });
 }
 function removeItem(groupIndex: number, itemIndex: number) {
-  const g = form.groups[groupIndex]
-  if (!g) return
-  g.items = g.items.filter((_, i) => i !== itemIndex)
+  const g = form.groups[groupIndex];
+  if (!g) return;
+  g.items = g.items.filter((_, i) => i !== itemIndex);
 }
 
-const saving = ref(false)
-const msg = ref<string | null>(null)
+const saving = ref(false);
+const toast = useToast();
 
 async function onSave() {
-  msg.value = null
-  saving.value = true
+  saving.value = true;
   try {
     const payload: LinksData = {
       groups: form.groups
@@ -53,18 +53,17 @@ async function onSave() {
               title: i.title,
               url: i.url,
               desc: i.desc || undefined,
-              avatar: i.avatar || undefined
-            }))
-        }))
-    }
-    await $fetch('/api/admin/links', { method: 'PUT' as any, body: payload } as any)
-    msg.value = '已保存'
-    await refresh()
+              avatar: i.avatar || undefined,
+            })),
+        })),
+    };
+    await $fetch('/api/admin/links', { method: 'PUT' as any, body: payload } as any);
+    toast.success('已保存');
+    await refresh();
   } catch (e: any) {
-    msg.value = e?.data?.message || e?.message || '保存失败'
+    toast.error(e?.data?.message || e?.message || '保存失败');
   } finally {
-    saving.value = false
-    setTimeout(() => (msg.value = null), 1500)
+    saving.value = false;
   }
 }
 </script>
@@ -123,7 +122,9 @@ async function onSave() {
               </div>
 
               <div class="mt-3 flex justify-end">
-                <button class="tw-btn-danger px-2 py-1 text-xs" type="button" @click="removeItem(gi, ii)">删除这条</button>
+                <button class="tw-btn-danger px-2 py-1 text-xs" type="button" @click="removeItem(gi, ii)">
+                  删除这条
+                </button>
               </div>
             </div>
           </div>
@@ -133,8 +134,6 @@ async function onSave() {
       </div>
 
       <p v-else class="text-sm text-slate-500">还没有分组，点“新增分组”开始。</p>
-
-      <p v-if="msg" class="mt-3 text-sm text-emerald-700">{{ msg }}</p>
     </div>
   </section>
 </template>

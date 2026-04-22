@@ -1,28 +1,30 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', ssr: false, middleware: ['admin-dev-only'] })
+import { useToast } from '../../../composables/useToast';
+definePageMeta({ layout: 'admin', ssr: false, middleware: ['admin-dev-only'] });
 
-const router = useRouter()
-const title = ref('')
-const slug = ref('')
-const creating = ref(false)
-const errMsg = ref<string | null>(null)
+const router = useRouter();
+const title = ref('');
+const slug = ref('');
+const creating = ref(false);
+const errMsg = ref<string | null>(null);
+const toast = useToast();
 
 function suggestSlug() {
-  const t = title.value.trim().toLowerCase()
+  const t = title.value.trim().toLowerCase();
   slug.value =
     t
       .replace(/[\s_]+/g, '-')
       .replace(/[^a-z0-9\-\/]/g, '')
-      .replace(/-+/g, '-') || `${new Date().toISOString().slice(0, 10)}-post`
+      .replace(/-+/g, '-') || `${new Date().toISOString().slice(0, 10)}-post`;
 }
 
 async function onCreate() {
-  errMsg.value = null
+  errMsg.value = null;
   if (!slug.value.trim()) {
-    errMsg.value = '请填写 slug（文件名，不含 .md，可包含子目录，如 tech/hello）'
-    return
+    errMsg.value = '请填写 slug（文件名，不含 .md，可包含子目录，如 tech/hello）';
+    return;
   }
-  creating.value = true
+  creating.value = true;
   try {
     await $fetch('/api/admin/posts', {
       method: 'POST' as any,
@@ -32,16 +34,18 @@ async function onCreate() {
           title: title.value || '未命名',
           date: new Date().toISOString().slice(0, 10),
           tags: [],
-          draft: true
+          draft: true,
         },
-        body: `# ${title.value || '未命名'}\n\n`
-      }
-    } as any)
-    await router.push(`/admin/posts/edit/${slug.value.trim()}`)
+        body: `# ${title.value || '未命名'}\n\n`,
+      },
+    } as any);
+    toast.success('已创建');
+    await router.push(`/admin/posts/edit/${slug.value.trim()}`);
   } catch (e: any) {
-    errMsg.value = e?.data?.message || e?.message || '创建失败'
+    errMsg.value = e?.data?.message || e?.message || '创建失败';
+    toast.error(errMsg.value || '创建失败');
   } finally {
-    creating.value = false
+    creating.value = false;
   }
 }
 </script>
@@ -64,8 +68,7 @@ async function onCreate() {
           class="tw-input"
           type="text"
           placeholder="例如：我的第一篇文章"
-          @blur="!slug && suggestSlug()"
-        />
+          @blur="!slug && suggestSlug()" />
       </div>
 
       <div>

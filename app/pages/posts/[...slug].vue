@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { useIsDesktopProduction } from '~/composables/useDesktopContent';
+import { useIsDesktopProduction } from '../../composables/useDesktopContent';
 const route = useRoute();
 
 const contentRef = ref<HTMLElement | null>(null);
 const isDesktopProd = useIsDesktopProduction();
+const tocRefreshKey = ref(0);
 
 const slug = computed(() => {
   const s = route.params.slug;
@@ -26,7 +27,7 @@ if (!post.value) {
   throw createError({ statusCode: 404, statusMessage: '文章不存在' });
 }
 
-const tocLinks = computed(() => (isDesktopProd.value ? [] : (post.value as any)?.body?.toc?.links || []));
+const tocLinks = computed(() => ((post.value as any)?.body?.toc?.links || []) as any[]);
 
 const viewMeta = computed(() => {
   if (!post.value) return {};
@@ -38,7 +39,7 @@ const viewMeta = computed(() => {
 <template>
   <article v-if="post">
     <div class="md:flex md:items-start md:gap-8">
-      <PostToc v-if="!isDesktopProd" :links="tocLinks" :content-el="contentRef" />
+      <PostToc :links="tocLinks" :content-el="contentRef" :refresh-key="tocRefreshKey" />
 
       <div class="min-w-0 flex-1">
         <header class="mb-5 border-b border-slate-100 pb-3">
@@ -52,7 +53,7 @@ const viewMeta = computed(() => {
         </header>
 
         <div ref="contentRef" class="prose prose-slate max-w-none">
-          <MarkdownViewer v-if="isDesktopProd" :value="(post as any)?.body || ''" />
+          <MarkdownViewer v-if="isDesktopProd" :value="(post as any)?.body || ''" @rendered="tocRefreshKey++" />
           <ContentRenderer v-else :value="post as any" />
         </div>
 

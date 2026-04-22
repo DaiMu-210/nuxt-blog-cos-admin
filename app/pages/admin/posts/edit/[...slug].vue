@@ -1,52 +1,51 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', ssr: false, middleware: ['admin-dev-only'] })
+import { useToast } from '../../../../composables/useToast';
+definePageMeta({ layout: 'admin', ssr: false, middleware: ['admin-dev-only'] });
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
 const slug = computed(() => {
-  const s = route.params.slug
-  return Array.isArray(s) ? s.join('/') : String(s || '')
-})
+  const s = route.params.slug;
+  return Array.isArray(s) ? s.join('/') : String(s || '');
+});
 
 type PostMeta = {
-  title?: string
-  description?: string
-  date?: string
-  category?: string
-  tags?: string[]
-  draft?: boolean
-  [k: string]: any
-}
+  title?: string;
+  description?: string;
+  date?: string;
+  category?: string;
+  tags?: string[];
+  draft?: boolean;
+  [k: string]: any;
+};
 
 type AdminPostResponse = {
-  slug: string
-  meta: PostMeta
-  body: string
-}
+  slug: string;
+  meta: PostMeta;
+  body: string;
+};
 
-const { data, pending, error } = await useFetch<AdminPostResponse>(
-  () => `/api/admin/posts/${slug.value}`,
-  { server: false }
-)
+const { data, pending, error } = await useFetch<AdminPostResponse>(() => `/api/admin/posts/${slug.value}`, {
+  server: false,
+});
 
-const meta = reactive<PostMeta>({})
-const tagsInput = ref('')
-const body = ref('')
+const meta = reactive<PostMeta>({});
+const tagsInput = ref('');
+const body = ref('');
 
 watchEffect(() => {
-  if (!data.value) return
-  Object.assign(meta, data.value.meta || {})
-  tagsInput.value = Array.isArray(data.value.meta?.tags) ? (data.value.meta.tags || []).join(', ') : ''
-  body.value = data.value.body || ''
-})
+  if (!data.value) return;
+  Object.assign(meta, data.value.meta || {});
+  tagsInput.value = Array.isArray(data.value.meta?.tags) ? (data.value.meta.tags || []).join(', ') : '';
+  body.value = data.value.body || '';
+});
 
-const saving = ref(false)
-const saveMsg = ref<string | null>(null)
+const saving = ref(false);
+const toast = useToast();
 
 async function onSave() {
-  saveMsg.value = null
-  saving.value = true
+  saving.value = true;
   try {
     await $fetch(`/api/admin/posts/${slug.value}`, {
       method: 'PUT' as any,
@@ -56,27 +55,26 @@ async function onSave() {
           tags: tagsInput.value
             .split(',')
             .map((s) => s.trim())
-            .filter(Boolean)
+            .filter(Boolean),
         },
-        body: body.value
-      }
-    } as any)
-    saveMsg.value = '已保存'
-    setTimeout(() => (saveMsg.value = null), 1500)
+        body: body.value,
+      },
+    } as any);
+    toast.success('已保存');
   } catch (e: any) {
-    saveMsg.value = e?.data?.message || e?.message || '保存失败'
+    toast.error(e?.data?.message || e?.message || '保存失败');
   } finally {
-    saving.value = false
+    saving.value = false;
   }
 }
 
 async function onBack() {
-  await router.push('/admin/posts')
+  await router.push('/admin/posts');
 }
 </script>
 
 <template>
-  <section class="mx-auto max-w-none">
+  <section class="mx-auto max-w-none h-full flex flex-col">
     <div class="mb-4 flex items-center justify-between gap-3">
       <div class="flex items-center gap-2 min-w-0">
         <button class="tw-btn-ghost px-2 py-1 text-xs" type="button" @click="onBack">返回</button>
@@ -92,9 +90,9 @@ async function onBack() {
 
     <p v-if="error" class="text-sm text-red-700">加载失败：{{ error?.data?.message || error?.message }}</p>
 
-    <div v-else class="grid gap-4 min-[1024px]:grid-cols-[360px_1fr] items-start">
-      <div class="tw-card p-4">
-        <div class="space-y-4">
+    <div v-else class="grid gap-4 min-[1024px]:grid-cols-[360px_1fr] items-stretch flex-1 min-h-0 h-full">
+      <div class="tw-card p-4 min-h-0 h-full flex flex-col">
+        <div class="flex flex-col gap-4 flex-1 min-h-0">
           <div>
             <label class="block text-xs text-slate-500 mb-2">标题</label>
             <input v-model="meta.title" class="tw-input" type="text" placeholder="文章标题" />
@@ -110,8 +108,7 @@ async function onBack() {
               <label class="relative inline-flex items-center cursor-pointer">
                 <input v-model="meta.draft" type="checkbox" class="sr-only peer" />
                 <span
-                  class="h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-900 transition after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5"
-                />
+                  class="h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-900 transition after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5" />
               </label>
             </div>
           </div>
@@ -126,18 +123,20 @@ async function onBack() {
             <input v-model="tagsInput" class="tw-input" type="text" placeholder="nuxt, blog" />
           </div>
 
-          <div>
+          <div class="flex flex-col flex-1 min-h-0">
             <label class="block text-xs text-slate-500 mb-2">描述</label>
-            <textarea v-model="meta.description" class="tw-textarea min-h-[72px]" rows="2" placeholder="用于列表摘要/SEO" />
+            <textarea
+              v-model="meta.description"
+              class="tw-textarea flex-1 min-h-0 resize-none"
+              rows="2"
+              placeholder="用于列表摘要/SEO" />
           </div>
         </div>
       </div>
 
-      <div class="tw-card overflow-hidden bg-white h-[60vh] min-[1024px]:h-[calc(100vh-12rem)]">
+      <div class="tw-card overflow-hidden bg-white min-h-0 h-full">
         <AdminEditor v-model="body" />
       </div>
     </div>
-
-    <p v-if="saveMsg" class="mt-3 text-sm text-emerald-700">{{ saveMsg }}</p>
   </section>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useToast } from '../../composables/useToast';
 definePageMeta({ layout: 'admin', ssr: false, middleware: ['admin-dev-only'] });
 
 type SocialItem = { label: string; url: string };
@@ -79,10 +80,9 @@ function removeProject(i: number) {
 }
 
 const saving = ref(false);
-const msg = ref<string | null>(null);
+const toast = useToast();
 
 async function onSave() {
-  msg.value = null;
   saving.value = true;
   try {
     const pinned = pinnedInput.value
@@ -128,13 +128,12 @@ async function onSave() {
       },
     };
     await $fetch('/api/admin/site', { method: 'PUT' as any, body: payload } as any);
-    msg.value = '已保存';
+    toast.success('已保存');
     await refreshNuxtData(['site', 'site:layout']);
   } catch (e: any) {
-    msg.value = e?.data?.message || e?.message || '保存失败';
+    toast.error(e?.data?.message || e?.message || '保存失败');
   } finally {
     saving.value = false;
-    setTimeout(() => (msg.value = null), 1500);
   }
 }
 </script>
@@ -281,8 +280,6 @@ async function onSave() {
           </div>
         </div>
       </div>
-
-      <p v-if="msg" class="mt-3 text-sm text-emerald-700">{{ msg }}</p>
     </div>
   </section>
 </template>

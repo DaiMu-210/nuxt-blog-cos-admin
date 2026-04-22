@@ -1,50 +1,55 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', ssr: false, middleware: ['admin-dev-only'] })
+import { useToast } from '../../../composables/useToast';
+definePageMeta({ layout: 'admin', ssr: false, middleware: ['admin-dev-only'] });
 
-const { data: posts, refresh, pending, error } = await useFetch('/api/admin/posts', {
-  server: false
-})
+const {
+  data: posts,
+  refresh,
+  pending,
+  error,
+} = await useFetch('/api/admin/posts', {
+  server: false,
+});
 
-const confirmOpen = ref(false)
-const targetSlug = ref<string | null>(null)
-const deleting = ref(false)
-const deleteErrMsg = ref('')
+const confirmOpen = ref(false);
+const targetSlug = ref<string | null>(null);
+const deleting = ref(false);
+const toast = useToast();
 
 function openDelete(slug: string) {
-  deleteErrMsg.value = ''
-  targetSlug.value = slug
-  confirmOpen.value = true
+  targetSlug.value = slug;
+  confirmOpen.value = true;
 }
 
 function closeDelete() {
-  if (deleting.value) return
-  confirmOpen.value = false
-  targetSlug.value = null
+  if (deleting.value) return;
+  confirmOpen.value = false;
+  targetSlug.value = null;
 }
 
 function encodeSlug(slug: string) {
   return slug
     .split('/')
     .map((seg) => encodeURIComponent(seg))
-    .join('/')
+    .join('/');
 }
 
 async function confirmDelete() {
-  if (!targetSlug.value) return
-  deleting.value = true
-  deleteErrMsg.value = ''
+  if (!targetSlug.value) return;
+  deleting.value = true;
   try {
     await $fetch(`/api/admin/posts/${encodeSlug(targetSlug.value)}`, {
       method: 'DELETE' as any,
       credentials: 'include',
-    })
-    confirmOpen.value = false
-    targetSlug.value = null
-    await refresh()
+    });
+    toast.success('已删除');
+    confirmOpen.value = false;
+    targetSlug.value = null;
+    await refresh();
   } catch (e: any) {
-    deleteErrMsg.value = e?.data?.message || e?.message || '删除失败'
+    toast.error(e?.data?.message || e?.message || '删除失败');
   } finally {
-    deleting.value = false
+    deleting.value = false;
   }
 }
 </script>
@@ -62,17 +67,14 @@ async function confirmDelete() {
       </div>
     </div>
 
-    <p v-if="error" class="text-sm text-red-700">
-      无法加载文章列表：{{ error?.data?.message || error?.message }}
-    </p>
-    <p v-if="deleteErrMsg" class="mt-2 text-sm text-red-700">
-      {{ deleteErrMsg }}
-    </p>
+    <p v-if="error" class="text-sm text-red-700">无法加载文章列表：{{ error?.data?.message || error?.message }}</p>
 
     <ul v-if="!error" class="tw-card mt-3 divide-y divide-slate-100 px-4">
       <li v-for="p in posts || []" :key="p.slug" class="flex items-center justify-between gap-3 py-4">
         <div class="min-w-0">
-          <NuxtLink class="font-semibold text-slate-900 no-underline hover:underline" :to="`/admin/posts/edit/${p.slug}`">
+          <NuxtLink
+            class="font-semibold text-slate-900 no-underline hover:underline"
+            :to="`/admin/posts/edit/${p.slug}`">
             {{ p.title || p.slug }}
           </NuxtLink>
           <div class="mt-1 text-xs text-slate-500">
@@ -83,13 +85,14 @@ async function confirmDelete() {
           </div>
         </div>
         <div class="flex items-center gap-3 shrink-0">
-          <NuxtLink class="text-sm text-blue-600 hover:underline" :to="`/posts/${p.slug}`" target="_blank">预览</NuxtLink>
+          <NuxtLink class="text-sm text-blue-600 hover:underline" :to="`/posts/${p.slug}`" target="_blank"
+            >预览</NuxtLink
+          >
           <button
             class="text-sm text-red-700 hover:underline disabled:opacity-60 disabled:cursor-not-allowed"
             type="button"
             :disabled="deleting"
-            @click="openDelete(p.slug)"
-          >
+            @click="openDelete(p.slug)">
             删除
           </button>
         </div>
@@ -105,8 +108,7 @@ async function confirmDelete() {
         confirm-text="删除"
         :loading="deleting"
         @close="closeDelete"
-        @confirm="confirmDelete"
-      />
+        @confirm="confirmDelete" />
     </ClientOnly>
   </section>
 </template>

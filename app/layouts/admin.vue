@@ -57,8 +57,10 @@ async function logout() {
       </div>
     </aside>
 
-    <main class="p-4 md:p-5 overflow-auto">
-      <slot />
+    <main class="p-4 md:p-5 min-h-0 overflow-hidden flex flex-col">
+      <div class="flex-1 min-h-0 overflow-auto">
+        <slot />
+      </div>
     </main>
   </div>
 </template>
