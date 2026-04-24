@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { usePostsList, useSiteData } from '~/composables/useDesktopContent';
+import { useIsDesktopProduction, usePostsList, useSiteData } from '~/composables/useDesktopContent';
 const { data: site } = await useSiteData('site');
 const { data: posts } = await usePostsList('posts');
 const siteData = computed(() => (site.value ?? {}) as any);
+const isDesktopProd = useIsDesktopProduction();
 
 onMounted(() => {
-  refreshNuxtData('site');
+  if (isDesktopProd.value) refreshNuxtData('site');
 });
 
 const publishedPosts = computed(() => (posts.value ?? []).filter((p: any) => !p.draft));

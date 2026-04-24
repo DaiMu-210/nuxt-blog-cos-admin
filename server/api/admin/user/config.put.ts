@@ -2,6 +2,7 @@ import { createError, readBody } from 'h3';
 import { setAdminSession } from '../../../utils/admin-auth';
 import { assertAdminEnabled } from '../../../utils/admin-content';
 import { DEFAULT_ADMIN_TTL_SECONDS, updateLocalConfig } from '../../../utils/local-config';
+import { resolve } from 'node:path';
 
 type Body = {
   ttlSeconds?: number;
@@ -70,6 +71,8 @@ export default defineEventHandler(async (event) => {
 
   await setAdminSession(event);
 
+  const dataDir = String(process.env.NUXT_DESKTOP_DATA_DIR || '').trim();
+  const configPath = dataDir ? resolve(dataDir, 'local-config.json') : resolve(process.cwd(), '.data', 'local-config.json');
   return {
     admin: {
       ttlSeconds: next.admin?.ttlSeconds ?? DEFAULT_ADMIN_TTL_SECONDS,
@@ -79,6 +82,10 @@ export default defineEventHandler(async (event) => {
       region: next.cos?.region,
       secretIdSet: !!next.cos?.secretId,
       secretKeySet: !!next.cos?.secretKey,
+    },
+    desktop: {
+      dataDir: dataDir || '',
+      configPath,
     },
   };
 });

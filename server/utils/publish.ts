@@ -1,8 +1,8 @@
 import { createError } from 'h3';
 import { randomBytes } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { stat } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { dirname, resolve } from 'node:path';
 import { assertAdminEnabled } from './admin-content';
 import { ensureCoscli } from './ensure-coscli';
 import { readLocalConfig } from './local-config';
@@ -101,21 +101,225 @@ async function findInPath(names: string[]) {
   return '';
 }
 
-async function resolveGenerateDistCommand() {
-  const npmExecPath = String(process.env.npm_execpath || '').trim();
-  if (npmExecPath && (await fileExists(npmExecPath))) {
-    return { cmd: process.execPath, args: [npmExecPath, 'run', 'generate:dist'] };
+async function resolveAppRootForPublish() {
+  const start = process.cwd();
+  const candidates: string[] = [start];
+  for (let i = 0; i < 12; i += 1) {
+    candidates.push(resolve(candidates[candidates.length - 1]!, '..'));
   }
 
-  const pnpmNames = process.platform === 'win32' ? ['pnpm.cmd', 'pnpm.exe', 'pnpm'] : ['pnpm'];
+  const hasAny = async (dir: string, rels: string[]) => {
+    for (const rel of rels) {
+      if (await pathExists(resolve(dir, rel))) return true;
+    }
+    return false;
+  };
+
+  for (const dir of candidates) {
+    if (await pathExists(resolve(dir, 'scripts', 'export-dist.mjs'))) return dir;
+    if ((await hasAny(dir, ['nuxt.config.ts', 'nuxt.config.js'])) && (await pathExists(resolve(dir, 'app'))))
+      return dir;
+    if ((await pathExists(resolve(dir, 'package.json'))) && (await hasAny(dir, ['app', 'server', 'scripts'])))
+      return dir;
+  }
+
+  return start;
+}
+
+function getDesktopDataDir() {
+  const v = String(process.env.NUXT_DESKTOP_DATA_DIR || '').trim();
+  return v ? resolve(v) : '';
+}
+
+async function pathExists(p: string) {
+  try {
+    await stat(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const PUBLISH_REQUIRED_DEPENDENCIES: Record<string, string> = {
+  nuxt: '^4.4.2',
+  '@nuxt/content': '^3.13.0',
+  '@nuxtjs/tailwindcss': '7.0.0-beta.1',
+  tailwindcss: '^4.2.2',
+  '@tailwindcss/typography': '^0.5.19',
+  vue: '^3.5.32',
+  'vue-router': '^5.0.4',
+  zod: '^4.3.6',
+  'gray-matter': '^4.0.3',
+  'highlight.js': '^11.11.1',
+  'markdown-it': '^14.1.0',
+  'markdown-it-task-lists': '^2.1.1',
+  sortablejs: '^1.15.7',
+  '@toast-ui/editor': '^3.2.2',
+};
+
+async function ensureWorkspacePackageJson(workspaceRoot: string, appRoot: string, job: PublishJobInternal) {
+  const workspacePkgPath = resolve(workspaceRoot, 'package.json');
+  const appPkgPath = resolve(appRoot, 'package.json');
+
+  const readJson = async (p: string) => {
+    try {
+      const raw = await readFile(p, 'utf8');
+      return JSON.parse(raw || '{}') as any;
+    } catch {
+      return null;
+    }
+  };
+
+  const workspacePkg = (await readJson(workspacePkgPath)) || {};
+  const appPkg = (await readJson(appPkgPath)) || {};
+  const deps = (
+    workspacePkg.dependencies && typeof workspacePkg.dependencies === 'object' ? workspacePkg.dependencies : {}
+  ) as Record<string, string>;
+  const appDeps = (appPkg.dependencies && typeof appPkg.dependencies === 'object' ? appPkg.dependencies : {}) as Record<
+    string,
+    string
+  >;
+
+  const appDevDeps = (
+    appPkg.devDependencies && typeof appPkg.devDependencies === 'object' ? appPkg.devDependencies : {}
+  ) as Record<string, string>;
+  const getWantedVersion = (name: string) => {
+    const v = String(
+      deps[name] || appDeps[name] || appDevDeps[name] || PUBLISH_REQUIRED_DEPENDENCIES[name] || '',
+    ).trim();
+    return v || PUBLISH_REQUIRED_DEPENDENCIES[name] || '*';
+  };
+
+  let changed = false;
+  const nextDeps: Record<string, string> = { ...deps };
+  for (const name of Object.keys(PUBLISH_REQUIRED_DEPENDENCIES)) {
+    if (!nextDeps[name]) {
+      nextDeps[name] = getWantedVersion(name);
+      changed = true;
+    }
+  }
+
+  const nextPkg = changed
+    ? {
+        name: String(workspacePkg.name || appPkg.name || 'nuxt-blog-cos-admin-publish'),
+        version: String(workspacePkg.version || appPkg.version || '0.0.0'),
+        private: true,
+        type: 'module',
+        dependencies: nextDeps,
+        scripts: {
+          postinstall: 'nuxt prepare',
+        },
+      }
+    : workspacePkg;
+
+  if (changed || !(await pathExists(workspacePkgPath))) {
+    pushLog(job, '工作区 package.json 不完整，已自动补齐构建所需 dependencies');
+    await writeFile(workspacePkgPath, JSON.stringify(nextPkg, null, 2) + '\n', 'utf8');
+  }
+}
+
+async function ensurePublishWorkspace(appRoot: string, desktopDataDir: string, job: PublishJobInternal) {
+  const workspaceRoot = resolve(desktopDataDir || appRoot, '.publish-workspace');
+  await mkdir(workspaceRoot, { recursive: true });
+
+  const srcRoot = appRoot;
+  const copyItems = [
+    'app',
+    'server',
+    'scripts',
+    'types',
+    'content',
+    'public',
+    'package.json',
+    'pnpm-lock.yaml',
+    'pnpm-workspace.yaml',
+    'nuxt.config.ts',
+    'nuxt.config.js',
+    'content.config.ts',
+    'content.config.js',
+    'tailwind.config.ts',
+    'tailwind.config.js',
+    'tsconfig.json',
+  ];
+
+  for (const rel of copyItems) {
+    const src = resolve(srcRoot, rel);
+    if (!(await pathExists(src))) continue;
+    const dest = resolve(workspaceRoot, rel);
+    try {
+      await rm(dest, { recursive: true, force: true });
+    } catch {}
+    await cp(src, dest, { recursive: true });
+  }
+
+  await ensureWorkspacePackageJson(workspaceRoot, srcRoot, job);
+
+  const desktopContent = desktopDataDir ? resolve(desktopDataDir, 'content') : '';
+  if (desktopContent && (await pathExists(desktopContent))) {
+    pushLog(job, `合并内容：${desktopContent} -> ${resolve(workspaceRoot, 'content')}`);
+    await mkdir(resolve(workspaceRoot, 'content'), { recursive: true });
+    await cp(desktopContent, resolve(workspaceRoot, 'content'), { recursive: true });
+  }
+
+  return workspaceRoot;
+}
+
+async function resolvePackageManagerCommand(projectRoot: string, actionArgs: string[]) {
+  const npmExecPath = String(process.env.npm_execpath || '').trim();
+  if (npmExecPath && (await fileExists(npmExecPath))) {
+    const isPnpm = /(^|[\\/])pnpm([\\/.-]|$)/i.test(npmExecPath);
+    return isPnpm
+      ? { cmd: process.execPath, args: [npmExecPath, '-C', projectRoot, ...actionArgs] }
+      : { cmd: process.execPath, args: [npmExecPath, '--prefix', projectRoot, ...actionArgs] };
+  }
+
+  const pnpmNames = process.platform === 'win32' ? ['pnpm.exe', 'pnpm.cmd', 'pnpm'] : ['pnpm'];
   const pnpm = await findInPath(pnpmNames);
-  if (pnpm) return { cmd: pnpm, args: ['run', 'generate:dist'] };
+  if (pnpm) return { cmd: pnpm, args: ['-C', projectRoot, ...actionArgs] };
 
-  const npmNames = process.platform === 'win32' ? ['npm.cmd', 'npm.exe', 'npm'] : ['npm'];
+  const npmNames = process.platform === 'win32' ? ['npm.exe', 'npm.cmd', 'npm'] : ['npm'];
   const npm = await findInPath(npmNames);
-  if (npm) return { cmd: npm, args: ['run', 'generate:dist'] };
+  if (npm) return { cmd: npm, args: ['--prefix', projectRoot, ...actionArgs] };
 
-  throw new Error('未找到 pnpm 或 npm，请先安装包管理器');
+  const corepackNames = process.platform === 'win32' ? ['corepack.exe', 'corepack.cmd', 'corepack'] : ['corepack'];
+  const nodeDir = dirname(process.execPath);
+  for (const name of corepackNames) {
+    const candidate = resolve(nodeDir, name);
+    if (await fileExists(candidate)) {
+      return { cmd: candidate, args: ['pnpm', '-C', projectRoot, ...actionArgs] };
+    }
+  }
+
+  throw new Error('未找到 pnpm 或 npm（也未找到 corepack），请先安装包管理器');
+}
+
+async function runNuxtGenerateAndExportDist(
+  job: PublishJobInternal,
+  projectRoot: string,
+  secrets: Array<string | undefined>,
+) {
+  const nuxtCli = resolve(projectRoot, 'node_modules', 'nuxt', 'bin', 'nuxt.mjs');
+  if (!(await fileExists(nuxtCli))) {
+    throw new Error(`未找到 Nuxt CLI：${nuxtCli}（请确认依赖已安装）`);
+  }
+
+  pushLog(job, '开始构建：nuxt generate');
+  pushLog(job, `执行命令：${process.execPath} ${nuxtCli} generate`);
+  await runCommand(job, process.execPath, [nuxtCli, 'generate'], secrets, {
+    cwd: projectRoot,
+    env: {
+      NUXT_DESKTOP: '0',
+      ELECTRON_RUN_AS_NODE: '0',
+    },
+  });
+
+  const exporter = resolve(projectRoot, 'scripts', 'export-dist.mjs');
+  if (!(await fileExists(exporter))) {
+    throw new Error(`未找到导出脚本：${exporter}`);
+  }
+  pushLog(job, '导出产物：scripts/export-dist.mjs');
+  pushLog(job, `执行命令：${process.execPath} ${exporter}`);
+  await runCommand(job, process.execPath, [exporter], secrets, { cwd: projectRoot });
 }
 
 function runCommand(
@@ -123,16 +327,32 @@ function runCommand(
   cmd: string,
   args: string[],
   secrets: Array<string | undefined>,
-  opts?: { cwd?: string },
+  opts?: { cwd?: string; env?: Record<string, string> },
 ) {
   return new Promise<void>((resolvePromise, reject) => {
-    const shouldShell = process.platform === 'win32' && /\.(cmd|bat)$/i.test(cmd);
-    const child = spawn(cmd, args, {
-      cwd: opts?.cwd || process.cwd(),
-      shell: shouldShell,
-      windowsHide: true,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
+    const cwd = opts?.cwd || process.cwd();
+    const env = opts?.env ? { ...process.env, ...opts.env } : process.env;
+    const isWin = process.platform === 'win32';
+    const isCmd = isWin && /\.(cmd|bat)$/i.test(cmd);
+    const quoteForCmd = (v: string) => {
+      const s = String(v ?? '');
+      return /[\s"]/g.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const child = isCmd
+      ? spawn('cmd.exe', ['/d', '/s', '/c', `${quoteForCmd(cmd)} ${args.map(quoteForCmd).join(' ')}`.trim()], {
+          cwd,
+          env,
+          shell: false,
+          windowsHide: true,
+          stdio: ['ignore', 'pipe', 'pipe'],
+        })
+      : spawn(cmd, args, {
+          cwd,
+          env,
+          shell: false,
+          windowsHide: true,
+          stdio: ['ignore', 'pipe', 'pipe'],
+        });
 
     const onChunk = (buf: any) => {
       const text = sanitizeText(String(buf || ''), secrets);
@@ -187,14 +407,23 @@ async function runPublishJob(job: PublishJobInternal) {
   }
 
   const secrets = [secretId, secretKey];
+  const appRoot = await resolveAppRootForPublish();
+  const desktopDataDir = getDesktopDataDir();
+  const projectRoot = desktopDataDir ? await ensurePublishWorkspace(appRoot, desktopDataDir, job) : appRoot;
 
-  const { cmd, args } = await resolveGenerateDistCommand();
-  pushLog(job, `开始构建：${process.platform === 'win32' ? 'generate:dist（可能较慢）' : 'generate:dist'}`);
-  await runCommand(job, cmd, args, secrets);
+  pushLog(job, `构建目录：${projectRoot}`);
+  pushLog(job, `当前目录：${process.cwd()}`);
+  if (desktopDataDir) {
+    pushLog(job, '安装依赖：pnpm install --prod');
+    const install = await resolvePackageManagerCommand(projectRoot, ['install', '--prod']);
+    pushLog(job, `执行命令：${install.cmd} ${install.args.join(' ')}`);
+    await runCommand(job, install.cmd, install.args, secrets, { cwd: projectRoot });
+  }
+  await runNuxtGenerateAndExportDist(job, projectRoot, secrets);
 
-  const distDir = resolve(process.cwd(), 'dist');
+  const distDir = resolve(projectRoot, 'dist');
   if (!(await fileExists(distDir))) {
-    throw new Error('未找到 dist/，请确认 generate:dist 是否成功');
+    throw new Error('未找到 dist/，请确认 nuxt generate 与导出步骤是否成功');
   }
 
   job.stage = 'syncing';
@@ -209,9 +438,7 @@ async function runPublishJob(job: PublishJobInternal) {
     coscli,
     ['sync', './dist', target, '-r', '--delete', '--init-skip=true', '-i', secretId, '-k', secretKey, '-e', endpoint],
     secrets,
-    process.platform === 'win32' && coscli.toLowerCase().endsWith('.exe')
-      ? { cwd: process.cwd() }
-      : { cwd: process.cwd() },
+    { cwd: projectRoot },
   );
 }
 

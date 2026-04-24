@@ -74,12 +74,14 @@ function spawnNuxtServer({ port }) {
   const appRoot = getAppRoot();
   const entry = resolveNuxtServerEntry(appRoot);
   const forceDev = String(process.env.ELECTRON_DEV || '').trim() === '1';
+  const customDataDir = String(process.env.NUXT_DESKTOP_DATA_DIR || '').trim();
+  const dataDir = customDataDir ? path.resolve(customDataDir) : path.join(app.getPath('userData'), '.data');
 
   if (!forceDev && fs.existsSync(entry)) {
     const env = {
       ...process.env,
       NUXT_DESKTOP: '1',
-      NUXT_DESKTOP_DATA_DIR: path.join(app.getPath('userData'), '.data'),
+      NUXT_DESKTOP_DATA_DIR: dataDir,
       HOST: '127.0.0.1',
       PORT: String(port),
       NITRO_HOST: '127.0.0.1',
@@ -98,7 +100,7 @@ function spawnNuxtServer({ port }) {
   const env = {
     ...process.env,
     NUXT_DESKTOP: '1',
-    NUXT_DESKTOP_DATA_DIR: path.join(app.getPath('userData'), '.data'),
+    NUXT_DESKTOP_DATA_DIR: dataDir,
   };
 
   const cmd = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';

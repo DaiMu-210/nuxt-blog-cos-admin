@@ -90,6 +90,12 @@ function getDefaultDownloadCandidates() {
   return [];
 }
 
+function getCoscliCacheDir() {
+  const desktopDataDir = String(process.env.NUXT_DESKTOP_DATA_DIR || '').trim();
+  const base = desktopDataDir ? resolve(desktopDataDir) : process.cwd();
+  return resolve(base, '.cache', 'coscli');
+}
+
 async function downloadFile(url: string, destPath: string) {
   await mkdir(resolve(destPath, '..'), { recursive: true });
 
@@ -144,7 +150,7 @@ export async function ensureCoscli() {
     );
   }
 
-  const cacheDir = resolve(process.cwd(), '.cache', 'coscli');
+  const cacheDir = getCoscliCacheDir();
   const filename = process.platform === 'win32' ? 'coscli.exe' : 'coscli';
   const destPath = join(cacheDir, `${process.platform}-${process.arch}`, filename);
 

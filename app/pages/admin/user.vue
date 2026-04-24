@@ -9,6 +9,10 @@ type UserConfig = {
     secretIdSet: boolean;
     secretKeySet: boolean;
   };
+  desktop?: {
+    dataDir?: string;
+    configPath?: string;
+  };
 };
 
 type PublishJob = {
@@ -34,6 +38,8 @@ const cosSecretKey = ref('');
 
 const cosSecretIdSet = ref(false);
 const cosSecretKeySet = ref(false);
+const desktopDataDir = ref('');
+const localConfigPath = ref('');
 
 watchEffect(() => {
   if (!data.value) return;
@@ -42,10 +48,23 @@ watchEffect(() => {
   cosRegion.value = String(data.value.cos?.region || '');
   cosSecretIdSet.value = Boolean(data.value.cos?.secretIdSet);
   cosSecretKeySet.value = Boolean(data.value.cos?.secretKeySet);
+  desktopDataDir.value = String((data.value as any)?.desktop?.dataDir || '');
+  localConfigPath.value = String((data.value as any)?.desktop?.configPath || '');
 });
 
 const savingConfig = ref(false);
 const configMsg = ref<string | null>(null);
+
+async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    configMsg.value = '已复制';
+  } catch {
+    configMsg.value = '复制失败';
+  } finally {
+    setTimeout(() => (configMsg.value = null), 1500);
+  }
+}
 
 async function saveConfig() {
   configMsg.value = null;
@@ -189,6 +208,39 @@ async function changePassword() {
     <p v-if="error" class="text-sm text-red-700 dark:text-red-300">加载失败：{{ error?.data?.message || error?.message }}</p>
 
     <div v-else class="space-y-4">
+      <section class="tw-card p-4">
+        <h2 class="text-base font-semibold text-slate-900 dark:text-slate-50">桌面端数据目录</h2>
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          桌面端运行时会通过环境变量 NUXT_DESKTOP_DATA_DIR 指定用户数据目录。
+        </p>
+        <div class="mt-3 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-3 items-start">
+          <div>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">NUXT_DESKTOP_DATA_DIR</label>
+            <input class="tw-input" type="text" :value="desktopDataDir || '（未设置，使用默认）'" readonly />
+          </div>
+          <div class="flex items-center gap-2 pt-6">
+            <button
+              class="tw-btn-ghost"
+              type="button"
+              :disabled="!desktopDataDir"
+              @click="copyToClipboard(desktopDataDir)">
+              复制
+            </button>
+          </div>
+        </div>
+        <div class="mt-3 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-3 items-start">
+          <div>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">local-config.json</label>
+            <input class="tw-input" type="text" :value="localConfigPath" readonly />
+          </div>
+          <div class="flex items-center gap-2 pt-6">
+            <button class="tw-btn-ghost" type="button" :disabled="!localConfigPath" @click="copyToClipboard(localConfigPath)">
+              复制
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section class="tw-card p-4">
         <h2 class="text-base font-semibold text-slate-900 dark:text-slate-50">会话 TTL</h2>
         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">单位：秒。保存后会刷新当前登录态的 cookie。</p>

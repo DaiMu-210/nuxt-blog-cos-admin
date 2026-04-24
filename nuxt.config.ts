@@ -19,7 +19,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      desktopMode: (process.env.NUXT_DESKTOP || '').trim() === '1',
+      desktopMode:
+        (process.env.NUXT_DESKTOP || '').trim() === '1' && (process.env.ELECTRON_RUN_AS_NODE || '').trim() === '1',
       siteUrl: '',
       beaudarRepo: '',
       beaudarTheme: 'github-light',

@@ -9,6 +9,8 @@
 .data-desktop-test
 dist
 dist-electron
+dist-electron.trash-*
+.publish-workspace
 
 # Node dependencies
 node_modules

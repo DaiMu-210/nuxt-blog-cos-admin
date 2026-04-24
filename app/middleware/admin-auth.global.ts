@@ -1,6 +1,12 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   if (!to.path.startsWith('/admin')) return;
 
+  const cfg = useRuntimeConfig();
+  const desktopMode = Boolean((cfg as any)?.public?.desktopMode);
+  if (!import.meta.dev && !desktopMode) {
+    throw createError({ statusCode: 404, statusMessage: 'Not Found' });
+  }
+
   const redirectParam = encodeURIComponent(to.fullPath);
 
   try {

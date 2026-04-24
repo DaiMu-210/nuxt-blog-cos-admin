@@ -60,7 +60,11 @@ export function useIsDesktopProduction() {
 export function useSiteData(key = 'site') {
   const isDesktopProd = useIsDesktopProduction();
   return useAsyncData<SiteData | null>(key, async () => {
-    if (isDesktopProd.value) return await $fetch<SiteData>('/api/desktop/site');
+    if (isDesktopProd.value) {
+      try {
+        return await $fetch<SiteData>('/api/desktop/site');
+      } catch {}
+    }
     return (await queryCollection('site').first()) as SiteData | null;
   });
 }
@@ -68,7 +72,11 @@ export function useSiteData(key = 'site') {
 export function useLinksData(key = 'links') {
   const isDesktopProd = useIsDesktopProduction();
   return useAsyncData<LinksData | null>(key, async () => {
-    if (isDesktopProd.value) return await $fetch<LinksData>('/api/desktop/links');
+    if (isDesktopProd.value) {
+      try {
+        return await $fetch<LinksData>('/api/desktop/links');
+      } catch {}
+    }
     return (await queryCollection('links').first()) as LinksData | null;
   });
 }
