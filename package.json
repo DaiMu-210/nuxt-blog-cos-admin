@@ -69,6 +69,8 @@
       "!**/.output/server/node_modules/**",
       "!**/node_modules/@esbuild/**",
       "!**/node_modules/esbuild/**",
+      "!**/node_modules/@oxc-minify/**",
+      "!**/node_modules/@oxc-parser/**",
       "content/**/*",
       "public/**/*",
       "nuxt.config.*",
