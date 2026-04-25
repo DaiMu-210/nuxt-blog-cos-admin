@@ -75,7 +75,9 @@ await run(process.execPath, [nuxtCli, 'build'], env)
 
 const builderCli = resolve(root, 'node_modules', 'electron-builder', 'out', 'cli', 'cli.js')
 const builderArgs =
-  target === 'dmg' ? ['--mac', 'dmg', '--universal'] : ['--win', target]
+  target === 'dmg'
+    ? ['--mac', 'dmg', '--universal', '--publish=never']
+    : ['--win', target, '--publish=never']
 if (await pathExists(builderCli)) {
   await run(process.execPath, [builderCli, ...builderArgs], env)
 } else {

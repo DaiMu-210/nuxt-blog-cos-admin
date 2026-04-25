@@ -67,6 +67,8 @@
       "electron/**/*",
       ".output/**/*",
       "!**/.output/server/node_modules/**",
+      "!**/node_modules/@esbuild/**",
+      "!**/node_modules/esbuild/**",
       "content/**/*",
       "public/**/*",
       "nuxt.config.*",
