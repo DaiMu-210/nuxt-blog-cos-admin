@@ -10,6 +10,7 @@
     "desktop:dev": "cross-env NUXT_DESKTOP=1 ELECTRON_DEV=1 electron electron/main.cjs",
     "desktop:build": "node scripts/desktop-build.mjs nsis",
     "desktop:portable": "node scripts/desktop-build.mjs portable",
+    "desktop:mac": "node scripts/desktop-build.mjs dmg",
     "desktop:reset-admin": "node -e \"const fs=require('fs');const path=require('path');const appdata=process.env.APPDATA||'';const candidates=[];if(process.env.NUXT_DESKTOP_DATA_DIR)candidates.push(path.join(process.env.NUXT_DESKTOP_DATA_DIR,'local-config.json'));if(appdata){candidates.push(path.join(appdata,'nuxt-blog-cos-admin','.data','local-config.json'));candidates.push(path.join(appdata,'Nuxt Blog COS Admin','.data','local-config.json'));}candidates.push(path.join(process.cwd(),'.data','local-config.json'));candidates.push(path.join(process.cwd(),'.data-desktop-test','local-config.json'));function resetFile(p){try{if(!fs.existsSync(p))return;let raw='';try{raw=fs.readFileSync(p,'utf8');}catch{}let cfg=null;try{cfg=JSON.parse(raw);}catch{cfg=null;}if(!cfg||typeof cfg!=='object'){fs.rmSync(p,{force:true});console.log('deleted',p);return;}cfg.version=1;cfg.admin=cfg.admin&&typeof cfg.admin==='object'?cfg.admin:{};delete cfg.admin.passwordHash;delete cfg.admin.sessionSecret;fs.writeFileSync(p,JSON.stringify(cfg,null,2)+'\\n','utf8');console.log('reset',p);}catch(e){console.error('failed',p,e&&e.message?e.message:e);}}for(const p of candidates)resetFile(p);\"",
     "generate": "nuxt generate",
     "generate:dist": "nuxt generate && node scripts/export-dist.mjs",
@@ -85,6 +86,12 @@
           ]
         }
       ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.productivity"
     },
     "nsis": {
       "oneClick": false,
