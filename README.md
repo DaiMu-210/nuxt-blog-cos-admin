@@ -80,18 +80,6 @@ pnpm desktop:build
 
 产物默认输出到 `dist-electron/`。
 
-### 构建 macOS 安装包（DMG / Universal）
-
-在 macOS 上执行：
-
-```bash
-pnpm desktop:mac
-```
-
-产物输出到 `dist-electron/`（`.dmg`）。未签名 DMG 首次打开可能会被 Gatekeeper 拦截，需要在系统设置中选择允许打开。
-
-如使用 GitHub Actions：运行 `desktop-macos` 工作流，完成后在 artifacts 中下载 DMG。
-
 ### 数据目录与备份
 
 - 本地私有配置：开发环境默认写入项目 `.data/local-config.json`；桌面应用运行时写入用户数据目录的 `.data/local-config.json`

@@ -4,11 +4,8 @@ import { resolve, join } from 'node:path'
 import { spawn } from 'node:child_process'
 
 const target = String(process.argv[2] || '').trim()
-if (!target || (target !== 'nsis' && target !== 'portable' && target !== 'dmg')) {
-  throw new Error('Usage: node scripts/desktop-build.mjs <nsis|portable|dmg>')
-}
-if (target === 'dmg' && process.platform !== 'darwin') {
-  throw new Error('dmg 只能在 macOS (darwin) 上构建')
+if (!target || (target !== 'nsis' && target !== 'portable')) {
+  throw new Error('Usage: node scripts/desktop-build.mjs <nsis|portable>')
 }
 
 const root = process.cwd()
@@ -74,13 +71,9 @@ if (!(await pathExists(nuxtCli))) throw new Error(`未找到 Nuxt CLI：${nuxtCl
 await run(process.execPath, [nuxtCli, 'build'], env)
 
 const builderCli = resolve(root, 'node_modules', 'electron-builder', 'out', 'cli', 'cli.js')
-const builderArgs =
-  target === 'dmg'
-    ? ['--mac', 'dmg', '--universal', '--publish=never']
-    : ['--win', target, '--publish=never']
 if (await pathExists(builderCli)) {
-  await run(process.execPath, [builderCli, ...builderArgs], env)
+  await run(process.execPath, [builderCli, '--win', target], env)
 } else {
   const pnpmCmd = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
-  await run(pnpmCmd, ['exec', 'electron-builder', ...builderArgs], env)
+  await run(pnpmCmd, ['exec', 'electron-builder', '--win', target], env)
 }
