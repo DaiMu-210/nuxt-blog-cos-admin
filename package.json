@@ -69,6 +69,7 @@
       "!**/.output/server/node_modules/**",
       "!**/node_modules/@esbuild/**",
       "!**/node_modules/esbuild/**",
+      "!**/node_modules/@parcel/watcher*/**",
       "!**/node_modules/@oxc-*/**",
       "!**/node_modules/@oxc-minify/**",
       "!**/node_modules/@oxc-parser/**",
