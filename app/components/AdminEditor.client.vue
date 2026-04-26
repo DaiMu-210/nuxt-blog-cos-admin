@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type Editor from '@toast-ui/editor'
+import { useTheme } from '~/composables/useTheme'
 
 const props = defineProps<{
   modelValue: string
@@ -9,12 +10,26 @@ const emit = defineEmits<{
   (e: 'update:modelValue', v: string): void
 }>()
 
+const { theme } = useTheme()
+
 const el = ref<HTMLDivElement | null>(null)
 let editor: Editor | null = null
+let ToastEditor: any | null = null
 let lastFromEditor = ''
 
-onMounted(async () => {
-  const { default: ToastEditor } = await import('@toast-ui/editor')
+async function ensureEditorCtor() {
+  if (ToastEditor) return
+  const mod = await import('@toast-ui/editor')
+  ToastEditor = mod.default
+}
+
+function destroyEditor() {
+  editor?.destroy()
+  editor = null
+}
+
+async function createEditor(initialValue: string) {
+  await ensureEditorCtor()
   if (!el.value) return
 
   editor = new ToastEditor({
@@ -24,7 +39,8 @@ onMounted(async () => {
     previewStyle: 'vertical',
     usageStatistics: false,
     hideModeSwitch: true,
-    initialValue: props.modelValue || ''
+    initialValue,
+    ...(theme.value === 'dark' ? { theme: 'dark' } : {})
   })
 
   lastFromEditor = editor.getMarkdown()
@@ -35,7 +51,22 @@ onMounted(async () => {
     lastFromEditor = md
     emit('update:modelValue', md)
   })
+}
+
+onMounted(async () => {
+  await createEditor(props.modelValue || '')
 })
+
+watch(
+  () => theme.value,
+  async (next, prev) => {
+    if (!editor || !el.value) return
+    if (next === prev) return
+    const md = editor.getMarkdown()
+    destroyEditor()
+    await createEditor(md)
+  }
+)
 
 watch(
   () => props.modelValue,
@@ -49,8 +80,7 @@ watch(
 )
 
 onBeforeUnmount(() => {
-  editor?.destroy()
-  editor = null
+  destroyEditor()
 })
 </script>
 

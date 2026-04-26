@@ -31,7 +31,7 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ['@toast-ui/editor/dist/toastui-editor.css'],
+  css: ['@toast-ui/editor/dist/toastui-editor.css', '@toast-ui/editor/dist/theme/toastui-editor-dark.css'],
 
   tailwindcss: {
     cssPath: '~/app/assets/css/tailwind.css',
