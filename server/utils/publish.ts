@@ -1,7 +1,7 @@
 import { createError } from 'h3';
 import { randomBytes } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { assertAdminEnabled } from './admin-content';
 import { ensureCoscli } from './ensure-coscli';
@@ -264,6 +264,57 @@ async function ensurePublishWorkspace(appRoot: string, desktopDataDir: string, j
   return workspaceRoot;
 }
 
+async function pruneMurmursForPublish(job: PublishJobInternal, projectRoot: string) {
+  const sitePath = resolve(projectRoot, 'content', 'site.json');
+  if (!(await fileExists(sitePath))) return;
+  let visibleDays = 0;
+  try {
+    const raw = await readFile(sitePath, 'utf8');
+    const site = JSON.parse(raw || '{}') as any;
+    visibleDays = Number(site?.murmurs?.visibleDays ?? 0);
+  } catch {}
+  if (!(visibleDays > 0)) return;
+
+  const murmursDir = resolve(projectRoot, 'content', 'murmurs');
+  if (!(await pathExists(murmursDir))) return;
+
+  const cutoff = Date.now() - visibleDays * 24 * 60 * 60 * 1000;
+  let removed = 0;
+  let scanned = 0;
+
+  const walk = async (dir: string) => {
+    const ents = await readdir(dir, { withFileTypes: true });
+    for (const ent of ents) {
+      const p = resolve(dir, ent.name);
+      if (ent.isDirectory()) await walk(p);
+      else if (ent.isFile() && p.endsWith('.json')) {
+        scanned += 1;
+        let shouldDelete = false;
+        try {
+          const raw = await readFile(p, 'utf8');
+          const data = JSON.parse(raw || '{}') as any;
+          if (data?.draft) shouldDelete = true;
+          else {
+            const t = Date.parse(String(data?.date || ''));
+            if (!Number.isFinite(t)) shouldDelete = true;
+            else if (t < cutoff) shouldDelete = true;
+          }
+        } catch {
+          shouldDelete = true;
+        }
+        if (shouldDelete) {
+          await rm(p, { force: true });
+          removed += 1;
+        }
+      }
+    }
+  };
+
+  pushLog(job, `剪裁碎碎念：visibleDays=${visibleDays}`);
+  await walk(murmursDir).catch(() => {});
+  pushLog(job, `碎碎念剪裁完成：扫描 ${scanned} 个文件，删除 ${removed} 个（过期/草稿/无效 date）`);
+}
+
 async function resolvePackageManagerCommand(projectRoot: string, actionArgs: string[]) {
   const npmExecPath = String(process.env.npm_execpath || '').trim();
   if (npmExecPath && (await fileExists(npmExecPath))) {
@@ -413,6 +464,7 @@ async function runPublishJob(job: PublishJobInternal) {
 
   pushLog(job, `构建目录：${projectRoot}`);
   pushLog(job, `当前目录：${process.cwd()}`);
+  if (desktopDataDir) await pruneMurmursForPublish(job, projectRoot);
   if (desktopDataDir) {
     pushLog(job, '安装依赖：pnpm install --prod');
     const install = await resolvePackageManagerCommand(projectRoot, ['install', '--prod']);

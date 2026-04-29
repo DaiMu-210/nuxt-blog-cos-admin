@@ -16,6 +16,18 @@ export default defineContentConfig({
       }),
     }),
 
+    murmurs: defineCollection({
+      type: 'data',
+      source: 'murmurs/**/*.json',
+      schema: z.object({
+        slug: z.string(),
+        text: z.string(),
+        date: z.string(),
+        images: z.array(z.string()).optional(),
+        draft: z.boolean().optional(),
+      }),
+    }),
+
     site: defineCollection({
       type: 'data',
       source: 'site.json',
@@ -58,6 +70,11 @@ export default defineContentConfig({
             featuredSlugs: z.array(z.string()).optional(),
             latestCount: z.number().optional(),
             showStats: z.boolean().optional(),
+          })
+          .optional(),
+        murmurs: z
+          .object({
+            visibleDays: z.number().optional(),
           })
           .optional(),
       }),

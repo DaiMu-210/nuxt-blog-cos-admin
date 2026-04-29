@@ -14,6 +14,7 @@ const { data, pending, error, refresh } = await useFetch<SiteData>('/api/admin/s
 const form = reactive<SiteData>({
   title: '',
   home: { latestCount: 10, showStats: true },
+  murmurs: { visibleDays: 0 },
   social: [],
   projects: [],
   comments: {
@@ -33,6 +34,7 @@ watchEffect(() => {
   savedBase.value = JSON.parse(JSON.stringify(data.value));
   Object.assign(form, data.value);
   form.home = { latestCount: 10, showStats: true, ...(data.value.home || {}) };
+  form.murmurs = { visibleDays: Number((data.value as any)?.murmurs?.visibleDays ?? 0) };
   form.social = Array.isArray(data.value.social)
     ? (data.value.social as SocialItem[]).map((s) => ({ ...s, _id: makeLocalId('social') }) as any)
     : [];
@@ -215,6 +217,9 @@ async function onSave() {
       title: (form.title || '').trim(),
       social: sanitizeSocial((form.social || []) as any),
       projects: sanitizeProjects((form.projects || []) as any),
+      murmurs: {
+        visibleDays: Number((form as any)?.murmurs?.visibleDays ?? 0),
+      },
       home: {
         ...(form.home || {}),
         pinnedSlugs: pinned,
@@ -466,6 +471,16 @@ async function onSave() {
               <span
                 class="h-6 w-11 rounded-full bg-slate-200 peer-checked:bg-slate-900 transition after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-5 dark:bg-slate-800 dark:peer-checked:bg-slate-200 dark:after:bg-slate-950" />
             </label>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-slate-500 mb-2 dark:text-slate-400">碎碎念可见天数（0=全部可见）</label>
+            <input v-model="form.murmurs!.visibleDays" class="tw-input" type="number" min="0" step="1" />
+          </div>
+          <div class="text-xs text-slate-500 dark:text-slate-400">
+            仅对前台展示与发布产物生效。设置为 7 表示只展示最近 7 天内的碎碎念。
           </div>
         </div>
       </div>

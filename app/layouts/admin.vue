@@ -4,6 +4,7 @@ const route = useRoute();
 const items = computed(() => [
   { to: '/admin', label: '仪表盘', icon: '🏠' },
   { to: '/admin/posts', label: '文章管理', icon: '📝' },
+  { to: '/admin/murmurs', label: '碎碎念', icon: '💬' },
   { to: '/admin/site', label: '站点设置', icon: '⚙️' },
   { to: '/admin/links', label: '友链管理', icon: '🔗' },
   { to: '/admin/taxonomy', label: '分类/标签', icon: '🏷️' },

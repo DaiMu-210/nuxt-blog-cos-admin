@@ -23,5 +23,7 @@ export type SiteData = {
     latestCount?: number;
     showStats?: boolean;
   };
+  murmurs?: {
+    visibleDays?: number;
+  };
 };
-

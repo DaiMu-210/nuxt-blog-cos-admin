@@ -14,6 +14,7 @@ const route = useRoute();
 const isSearchOpen = ref(false);
 const navItems = computed(() => [
   { to: '/', label: '首页', match: (p: string) => p === '/' },
+  { to: '/murmurs', label: '碎碎念', match: (p: string) => p === '/murmurs' },
   { to: '/posts', label: '文章', match: (p: string) => p === '/posts' || p.startsWith('/posts/') },
   { to: '/archives', label: '归档', match: (p: string) => p === '/archives' },
   { to: '/categories', label: '分类', match: (p: string) => p === '/categories' || p.startsWith('/categories/') },
