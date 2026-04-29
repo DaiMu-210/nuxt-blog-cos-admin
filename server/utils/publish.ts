@@ -428,6 +428,30 @@ function runCommand(
   });
 }
 
+async function pingSitemap(job: PublishJobInternal) {
+  const shouldPing = String(process.env.SITEMAP_PING || '').trim() === '1';
+  if (!shouldPing) return;
+  const siteUrl = String(process.env.NUXT_PUBLIC_SITE_URL || process.env.SITE_URL || '').trim().replace(/\/+$/, '');
+  if (!siteUrl) {
+    pushLog(job, '跳过 sitemap ping：缺少 NUXT_PUBLIC_SITE_URL 或 SITE_URL');
+    return;
+  }
+  const sitemapUrl = encodeURIComponent(`${siteUrl}/sitemap.xml`);
+  const endpoints = [
+    `https://www.google.com/ping?sitemap=${sitemapUrl}`,
+    `https://www.bing.com/ping?sitemap=${sitemapUrl}`,
+  ];
+  for (const u of endpoints) {
+    try {
+      const res = await fetch(u, { method: 'GET' });
+      pushLog(job, `sitemap ping: ${u} -> ${res.status}`);
+    } catch (e: any) {
+      const msg = e instanceof Error ? e.message : String(e || 'ping failed');
+      pushLog(job, `sitemap ping failed: ${u} -> ${msg}`);
+    }
+  }
+}
+
 export function getPublishJob(): PublishJobPublic {
   assertAdminEnabled();
   const store = getStore();
@@ -492,6 +516,8 @@ async function runPublishJob(job: PublishJobInternal) {
     secrets,
     { cwd: projectRoot },
   );
+
+  await pingSitemap(job);
 }
 
 export async function startPublish(): Promise<PublishJobPublic> {

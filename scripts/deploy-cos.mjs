@@ -203,6 +203,25 @@ async function main() {
     ],
     process.platform === 'win32' && coscli.toLowerCase().endsWith('.exe') ? { windowsHide: true, cwd: workspaceRoot } : { cwd: workspaceRoot },
   );
+
+  const shouldPing = (process.env.SITEMAP_PING || '').trim() === '1';
+  const siteUrl = String(process.env.NUXT_PUBLIC_SITE_URL || process.env.SITE_URL || '').trim().replace(/\/+$/, '');
+  if (shouldPing && siteUrl) {
+    const sitemapUrl = encodeURIComponent(`${siteUrl}/sitemap.xml`);
+    const endpoints = [
+      `https://www.google.com/ping?sitemap=${sitemapUrl}`,
+      `https://www.bing.com/ping?sitemap=${sitemapUrl}`,
+    ];
+    for (const u of endpoints) {
+      try {
+        const res = await fetch(u, { method: 'GET' });
+        process.stdout.write(`sitemap ping: ${u} -> ${res.status}\n`);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e || 'ping failed');
+        process.stdout.write(`sitemap ping failed: ${u} -> ${msg}\n`);
+      }
+    }
+  }
 }
 
 main().catch((e) => {
